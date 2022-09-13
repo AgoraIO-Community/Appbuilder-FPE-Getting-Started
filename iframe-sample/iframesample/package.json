@@ -75,6 +75,7 @@
     "react-native-keyboard-manager": "6.5.4-1",
     "react-native-responsive-fontsize": "0.5.1",
     "react-native-web": "0.14.13",
+    "react-native-webview": "^11.23.1",
     "react-router-dom": "5.2.0",
     "react-router-native": "5.2.0"
   },
@@ -142,5 +143,8 @@
       "json",
       "node"
     ]
-  }
+  },
+  "workspaces": [
+    "test-fpe"
+  ]
 }
