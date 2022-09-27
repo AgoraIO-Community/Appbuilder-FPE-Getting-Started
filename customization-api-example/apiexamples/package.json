@@ -144,8 +144,5 @@
       "json",
       "node"
     ]
-  },
-  "workspaces": [
-    "test-fpe"
-  ]
+  }
 }
