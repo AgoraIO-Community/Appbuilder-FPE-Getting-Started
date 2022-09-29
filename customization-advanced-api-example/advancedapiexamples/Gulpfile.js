@@ -81,8 +81,8 @@ const general = {
     // Target specific changes
 
     if (process.env.TARGET === 'rsdk') {
-      if(pkgNameArg == -1){
-        newPackage.name = "@appbuilder/react"
+      if (pkgNameArg == -1) {
+        newPackage.name = '@appbuilder/react';
       }
       newPackage.main = 'index.js';
       newPackage.types = 'index.d.ts';
@@ -98,8 +98,8 @@ const general = {
     }
 
     if (process.env.TARGET === 'wsdk') {
-      if(pkgNameArg == -1){
-        newPackage.name = "@appbuilder/web"
+      if (pkgNameArg == -1) {
+        newPackage.name = '@appbuilder/web';
       }
       newPackage.main = 'app-builder-web-sdk.umd2.js';
       newPackage.types = 'index.d.ts';
@@ -170,6 +170,9 @@ const electron = {
     const config = webpack(webpackConfig);
     new WebpackDevServer(config, {
       hot: true,
+      client: {
+        overlay: false,
+      },
     }).listen(webpackConfig.devServer.port, 'localhost', (err) => {
       if (err) {
         console.error(err);
@@ -180,7 +183,7 @@ const electron = {
   },
 
   start: (cb) => {
-    runCli('electron .', cb);
+    runCli('electron ./electron/main/index.js', cb);
   },
 };
 
