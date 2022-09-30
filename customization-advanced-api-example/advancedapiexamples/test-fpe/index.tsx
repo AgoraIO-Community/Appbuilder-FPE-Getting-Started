@@ -23,7 +23,7 @@ import AppRootCustomization from './api/app-root';
 /**
  * To see video call customization uncomment below line and comment other userCustomization const
  */
-const userCustomization = VideoCallCustomization;
+//const userCustomization = VideoCallCustomization;
 
 /**
  * To see top bar customization uncomment below line and comment other userCustomization const
@@ -58,7 +58,7 @@ const userCustomization = VideoCallCustomization;
 /**
  * To see video view customization uncomment below line and comment other userCustomization const
  */
-//const userCustomization = VideoViewCustomization;
+const userCustomization = VideoViewCustomization;
 
 /**
  * To see layout customization uncomment below line and comment other userCustomization const

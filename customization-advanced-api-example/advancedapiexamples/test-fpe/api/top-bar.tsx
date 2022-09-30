@@ -12,39 +12,100 @@
 import {customize} from 'customization-api';
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
+import {
+  useMeetingInfo,
+  useRecording,
+  NavBarComponentsArray,
+  config,
+} from 'customization-api';
+import Notice from '../notice';
 
 const TopBar = () => {
+  const {
+    data: {meetingTitle},
+  } = useMeetingInfo();
+  const [
+    CopyJoinInfo,
+    ParticipantsCountView,
+    ParticipantsIconButton,
+    ChatIconButton,
+    LayoutIconButton,
+    SettingsIconButton,
+  ] = NavBarComponentsArray;
+
   return (
-    <View style={styles.container}>
-      <View style={styles.textContainer}>
-        <Text style={styles.textStyle}>
-          Here is your new top bar component. Use app-state and sub-components
-          to customize your top bar
-          {'\n'} //TODO put documentation links which helpful to user
-        </Text>
+    <View style={style.rootContainer}>
+      <Notice message="This top bar component was rebuilt using the sub-components library." />
+      <View style={style.container}>
+        <View style={style.titleContainer}>
+          <View>
+            <Text>
+              {meetingTitle} {' - Sample App'}
+            </Text>
+          </View>
+          <View style={[style.navItem]}>
+            <CopyJoinInfo />
+          </View>
+        </View>
+        <View style={style.iconContainer}>
+          <View style={[style.navItem]}>
+            <ParticipantsIconButton />
+          </View>
+          {config.CHAT ? (
+            <>
+              <View style={[style.navItem]}>
+                <ChatIconButton />
+              </View>
+            </>
+          ) : (
+            <></>
+          )}
+          <View
+            style={[style.navItem]}
+            /**
+             * .measure returns undefined on Android unless collapsable=false or onLayout are specified
+             * so added collapsable property
+             * https://github.com/facebook/react-native/issues/29712
+             * */
+            collapsable={false}>
+            <LayoutIconButton />
+          </View>
+          <View style={[style.navItem]}>
+            <SettingsIconButton />
+          </View>
+        </View>
       </View>
     </View>
   );
 };
-const styles = StyleSheet.create({
+const style = StyleSheet.create({
+  rootContainer: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#90EE90',
-    justifyContent: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  textContainer: {
+  titleContainer: {
     flex: 1,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
     alignSelf: 'center',
-    borderWidth: 1,
-    maxHeight: 200,
-    borderRadius: 30,
+    paddingHorizontal: 10,
   },
-  textStyle: {
-    padding: 10,
-    fontSize: 18,
-    textAlign: 'center',
-    lineHeight: 30,
+  iconContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignSelf: 'center',
+    maxWidth: 300,
+  },
+  navItem: {
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    position: 'relative',
   },
 });
 

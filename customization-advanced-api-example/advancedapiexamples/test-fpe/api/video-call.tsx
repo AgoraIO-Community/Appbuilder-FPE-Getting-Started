@@ -19,53 +19,19 @@ import {
   Chat,
   SettingsView,
   useIsWeb,
-  UiKitBtnTemplate,
+  SidePanelType,
 } from 'customization-api';
-import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
-import {SidePanelType} from '../../src/subComponents/SidePanelEnum';
+import React from 'react';
+import {View, StyleSheet} from 'react-native';
+import Notice from '../notice';
 
 const VideoCallPage = () => {
   const {sidePanel} = useSidePanel();
   const isWeb = useIsWeb();
-  const [showNotice, setShowNotice] = useState(false);
-
-  const renderNotice = () => {
-    return (
-      <View style={styles.noticeContainer}>
-        <View
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignSelf: 'center',
-            paddingVertical: 20,
-          }}>
-          <View style={styles.textContainer}>
-            <Text style={styles.textStyle}>
-              This video call page rebuilt using the sub-components
-            </Text>
-          </View>
-          <View style={{justifyContent: 'center', alignSelf: 'center'}}>
-            <UiKitBtnTemplate
-              style={{width: 25, height: 25, marginTop: 5, marginLeft: 20}}
-              color={'#FD0845'}
-              name={'close'}
-              onPress={() => setShowNotice(false)}
-            />
-          </View>
-        </View>
-      </View>
-    );
-  };
-
-  useEffect(() => {
-    setShowNotice(true);
-  }, []);
 
   return (
     <View style={{flex: 1}}>
-      {showNotice ? renderNotice() : <></>}
+      <Notice message="This video call page was rebuilt using the sub-components library." />
       <View style={styles.container}>
         <Navbar />
         <View style={[styles.videoView, {backgroundColor: '#ffffff00'}]}>

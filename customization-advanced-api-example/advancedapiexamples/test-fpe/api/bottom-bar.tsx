@@ -9,42 +9,64 @@
  information visit https://appbuilder.agora.io. 
 *********************************************
 */
-import {customize} from 'customization-api';
+import {customize, ControlsComponentsArray} from 'customization-api';
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, StyleSheet} from 'react-native';
+import Notice from '../notice';
 
 const BottomBar = () => {
+  const [AudioBtn, VideoBtn, _, ScreenshareButton, Recording, Endcall] =
+    ControlsComponentsArray;
   return (
-    <View style={styles.container}>
-      <View style={styles.textContainer}>
-        <Text style={styles.textStyle}>
-          Here is your new bottom bar component. Use app-state and
-          sub-components to customize your bottom bar
-          {'\n'} //TODO put documentation links which helpful to user
-        </Text>
+    <View>
+      <Notice message="This bottom bar component was rebuilt using the sub-components" />
+      <View style={styles.container}>
+        <View
+          style={{
+            alignSelf: 'center',
+          }}>
+          <VideoBtn />
+        </View>
+        <View
+          style={{
+            marginVertical: 10,
+            alignSelf: 'center',
+          }}>
+          <AudioBtn />
+        </View>
+        <View
+          style={{
+            alignSelf: 'center',
+          }}>
+          <ScreenshareButton />
+        </View>
+        <View
+          style={{
+            alignSelf: 'center',
+          }}>
+          <Recording />
+        </View>
+        <View
+          style={{
+            alignSelf: 'center',
+          }}>
+          <Endcall />
+        </View>
       </View>
     </View>
   );
 };
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#90EE90',
-    justifyContent: 'center',
-  },
-  textContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignSelf: 'center',
-    borderWidth: 1,
-    maxHeight: 200,
-    borderRadius: 30,
-  },
-  textStyle: {
-    padding: 10,
-    fontSize: 18,
-    textAlign: 'center',
-    lineHeight: 30,
+    flex: 1.3,
+    minHeight: 80,
+    maxHeight: '8%',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    position: 'relative',
+    margin: 0,
+    bottom: 0,
+    paddingHorizontal: '25%',
   },
 });
 
