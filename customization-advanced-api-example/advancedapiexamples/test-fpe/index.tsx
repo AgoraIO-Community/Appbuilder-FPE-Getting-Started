@@ -18,8 +18,6 @@ import ChatSendButtonCustomization from './api/chat-send-button';
 import ParticipantsPanelCustomization from './api/participants-panel';
 import VideoViewCustomization from './api/custom-content-basic';
 import LayoutCustomization from './api/custom-layout';
-import InjectCustomContent from './api/custom-content-advanced';
-import AppRootCustomization from './api/app-root';
 /**
  * To see video call customization uncomment below line and comment other userCustomization const
  */
@@ -38,7 +36,7 @@ import AppRootCustomization from './api/app-root';
 /**
  * To see chat bubble customization uncomment below line and comment other userCustomization const
  */
-//const userCustomization = ChatBubbleCustomization;
+const userCustomization = ChatBubbleCustomization;
 
 /**
  * To see chat input uncomment below line and comment other userCustomization const
@@ -58,7 +56,7 @@ import AppRootCustomization from './api/app-root';
 /**
  * To see video view customization uncomment below line and comment other userCustomization const
  */
-const userCustomization = VideoViewCustomization;
+//const userCustomization = VideoViewCustomization;
 
 /**
  * To see layout customization uncomment below line and comment other userCustomization const

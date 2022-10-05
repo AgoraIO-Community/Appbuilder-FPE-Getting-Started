@@ -10,41 +10,119 @@
 *********************************************
 */
 import {customize} from 'customization-api';
-import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import React, {useState} from 'react';
+import {
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  StyleSheet,
+} from 'react-native';
+import {
+  ChatBubbleProps,
+  ChatBubble,
+  useMessages,
+  useChatUIControl,
+  useLocalUid,
+  config,
+} from 'customization-api';
+import * as leoProfanity from 'leo-profanity';
 
-const ChatBubble = () => {
+const CustomChatBubble = (props: ChatBubbleProps) => {
+  const [editActive, setEditActive] = useState(false);
+  const {editMessage, deleteMessage} = useMessages();
+  const localUid = useLocalUid();
+  const {privateActive, selectedChatUserId} = useChatUIControl();
+  const [editMsgLocal, setEditMsgLocal] = useState('');
+  if (editActive) {
+    return (
+      <View style={styles.container}>
+        <TextInput
+          style={styles.textInputStyle}
+          placeholder={'Edit message'}
+          onChangeText={(txt) => setEditMsgLocal(txt)}
+        />
+        <View style={styles.btnContainer}>
+          <TouchableOpacity
+            onPress={() => {
+              //do edit
+              editMessage(
+                props.msgId,
+                editMsgLocal,
+                privateActive ? selectedChatUserId : undefined,
+              );
+              setEditActive(false);
+            }}>
+            <Text>Submit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{marginHorizontal: 10}}
+            onPress={() => {
+              setEditActive(false);
+            }}>
+            <Text>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
-      <View style={styles.textContainer}>
-        <Text style={styles.textStyle}>
-          Here is your new chat bubble component. Use app-state and
-          sub-components to customize your chat
-          {'\n'} //TODO put documentation links which helpful to user
-        </Text>
-      </View>
+      <ChatBubble
+        {...props}
+        message={
+          props.isDeleted
+            ? 'This message was deleted'
+            : leoProfanity.clean(props.message)
+        }
+      />
+      {props.uid === localUid && (
+        <View style={styles.btnContainer}>
+          {!props?.isDeleted && (
+            <>
+              <TouchableOpacity
+                onPress={() => {
+                  setEditActive(true);
+                }}>
+                <Text>Edit</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={{marginHorizontal: 10}}
+                onPress={() => {
+                  deleteMessage(
+                    props.msgId,
+                    privateActive ? selectedChatUserId : undefined,
+                  );
+                }}>
+                <Text style={{color: 'red'}}>Delete</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
+      )}
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#90EE90',
-    justifyContent: 'center',
+    borderColor: '#90EE90',
+    borderWidth: 5,
   },
-  textContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignSelf: 'center',
-    borderWidth: 1,
-    maxHeight: 200,
-    borderRadius: 30,
+  textInputStyle: {
+    marginHorizontal: 10,
+    marginVertical: 5,
+    width: '90%',
+    height: 35,
+    borderRadius: 20,
+    borderWidth: 2,
+    paddingHorizontal: 10,
+    borderColor: config.PRIMARY_COLOR,
   },
-  textStyle: {
-    padding: 10,
-    fontSize: 18,
-    textAlign: 'center',
-    lineHeight: 30,
+  btnContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
   },
 });
 
@@ -52,7 +130,7 @@ const customization = customize({
   components: {
     videoCall: {
       chat: {
-        chatBubble: ChatBubble,
+        chatBubble: CustomChatBubble,
       },
     },
   },
