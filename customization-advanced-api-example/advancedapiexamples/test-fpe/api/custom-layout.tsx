@@ -9,43 +9,77 @@
  information visit https://appbuilder.agora.io. 
 *********************************************
 */
-import {customize} from 'customization-api';
-import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import React, {useState} from 'react';
+import {
+  ScrollView,
+  View,
+  Dimensions,
+  StyleSheet,
+  Pressable,
+} from 'react-native';
+import {
+  customize,
+  layoutComponent,
+  RenderComponent,
+  useRtc,
+} from 'customization-api';
+//@ts-ignore
+import topPinnedLayoutIcon from '../assets/icons8-layout-64.png';
 
-const CustomLayout = () => {
+const CustomLayout: layoutComponent = ({renderData}) => {
+  const [dim, setDim] = useState([
+    Dimensions.get('window').width,
+    Dimensions.get('window').height,
+    Dimensions.get('window').width > Dimensions.get('window').height,
+  ]);
+  let onLayout = () => {
+    setTimeout(() => {
+      let {height, width} = Dimensions.get('window');
+      let isLandscape = width > height;
+      setDim([width, height, isLandscape]);
+    }, 20);
+  };
+  const {dispatch} = useRtc();
+  const [maxUid, ...minUids] = renderData;
+
   return (
-    <View style={styles.container}>
-      <View style={styles.textContainer}>
-        <Text style={styles.textStyle}>
-          Here is your new custom layout view. Use app-state and sub-components
-          to customize your layout
-          {'\n'} //TODO put documentation links which helpful to user
-        </Text>
+    <View style={style.container} onLayout={onLayout}>
+      <ScrollView horizontal={true} decelerationRate={0} style={{flex: 1}}>
+        {minUids.map((minUid, i) => (
+          <Pressable
+            style={{
+              width: ((dim[1] / 3) * 16) / 9 / 2 + 12, //dim[1] /4.3
+              height: '100%',
+              zIndex: 40,
+              paddingRight: 8,
+              paddingVertical: 4,
+            }}
+            key={'minVideo' + i}
+            onPress={() => {
+              dispatch({type: 'SwapVideo', value: [minUid]});
+            }}>
+            <RenderComponent uid={minUid} />
+          </Pressable>
+        ))}
+      </ScrollView>
+      <View style={style.flex4}>
+        <RenderComponent uid={maxUid} />
       </View>
     </View>
   );
 };
-const styles = StyleSheet.create({
+
+const style = StyleSheet.create({
   container: {
+    flexDirection: 'column',
     flex: 1,
-    backgroundColor: '#90EE90',
-    justifyContent: 'center',
+    padding: 4,
   },
-  textContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignSelf: 'center',
-    borderWidth: 1,
-    maxHeight: 200,
-    borderRadius: 30,
-  },
-  textStyle: {
-    padding: 10,
-    fontSize: 18,
-    textAlign: 'center',
-    lineHeight: 30,
-  },
+  width80: {width: '80%'},
+  width100: {width: '100%'},
+  flex2: {flex: 2},
+  flex4: {flex: 4, backgroundColor: '#ffffff00'},
+  flex1: {flex: 1},
 });
 
 const customization = customize({
@@ -57,7 +91,7 @@ const customization = customize({
           component: CustomLayout,
           label: 'Custom Layout',
           name: 'CustomLayout',
-          iconName: 'clipboard',
+          icon: topPinnedLayoutIcon,
         },
       ],
     },

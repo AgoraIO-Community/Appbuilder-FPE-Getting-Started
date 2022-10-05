@@ -15,7 +15,6 @@ import BottomBarCustomization from './api/bottom-bar';
 import ChatBubbleCustomization from './api/chat-bubble';
 import ChatInputCustomization from './api/chat-input';
 import ChatSendButtonCustomization from './api/chat-send-button';
-import ParticipantsPanelCustomization from './api/participants-panel';
 import VideoViewCustomization from './api/custom-content-basic';
 import LayoutCustomization from './api/custom-layout';
 /**
@@ -46,12 +45,7 @@ import LayoutCustomization from './api/custom-layout';
 /**
  * To see chat send button customization uncomment below line and comment other userCustomization const
  */
-const userCustomization = ChatSendButtonCustomization;
-
-/**
- * To see participant panel customization uncomment below line and comment other userCustomization const
- */
-//const userCustomization = ParticipantsPanelCustomization;
+//const userCustomization = ChatSendButtonCustomization;
 
 /**
  * To see video view customization uncomment below line and comment other userCustomization const
@@ -61,16 +55,6 @@ const userCustomization = ChatSendButtonCustomization;
 /**
  * To see layout customization uncomment below line and comment other userCustomization const
  */
-//const userCustomization = LayoutCustomization;
-
-/**
- * To see inject custom content uncomment below line and comment other userCustomization const
- */
-//const userCustomization = InjectCustomContent;
-
-/**
- * To check app root uncomment below line and comment other userCustomization const
- */
-//const userCustomization = AppRootCustomization;
+const userCustomization = LayoutCustomization;
 
 export default userCustomization;
