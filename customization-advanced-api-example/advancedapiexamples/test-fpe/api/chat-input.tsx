@@ -9,20 +9,64 @@
  information visit https://appbuilder.agora.io. 
 *********************************************
 */
-import {customize} from 'customization-api';
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native';
+import {
+  customize,
+  ChatTextInputProps,
+  useChatUIControl,
+  useMessages,
+  TextInput,
+  config,
+} from 'customization-api';
+import * as leoProfanity from 'leo-profanity';
 
-const ChatInput = () => {
-  return <View style={styles.container}></View>;
+const ChatInput = (props: ChatTextInputProps) => {
+  const {
+    selectedChatUserId: selectedUserId,
+    message,
+    setMessage,
+  } = useChatUIControl();
+  const {sendMessage} = useMessages();
+  const chatMessageInputPlaceholder = 'Type your message..';
+  const onChangeText = (text: string) => setMessage(text);
+  const onSubmitEditing = () => {
+    if (!selectedUserId) {
+      sendMessage(leoProfanity.clean(message));
+      setMessage('');
+    } else {
+      sendMessage(leoProfanity.clean(message), selectedUserId);
+      setMessage('');
+    }
+  };
+
+  return (
+    <>
+      <TextInput
+        value={message}
+        onChangeText={onChangeText}
+        style={styles.textInputStyle}
+        blurOnSubmit={false}
+        onSubmitEditing={onSubmitEditing}
+        placeholder={chatMessageInputPlaceholder}
+        placeholderTextColor={config.PRIMARY_FONT_COLOR}
+        autoCorrect={false}
+      />
+    </>
+  );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  textInputStyle: {
+    borderRadius: 10,
     backgroundColor: '#90EE90',
-    justifyContent: 'center',
+    borderColor: config.PRIMARY_COLOR,
+    borderWidth: 1,
+    color: config.PRIMARY_FONT_COLOR,
+    textAlign: 'left',
     height: 40,
+    paddingVertical: 10,
+    flex: 1,
     alignSelf: 'center',
   },
 });
