@@ -41,12 +41,12 @@ import LayoutCustomization from './api/custom-layout';
 /**
  * To see chat input uncomment below line and comment other userCustomization const
  */
-const userCustomization = ChatInputCustomization;
+//const userCustomization = ChatInputCustomization;
 
 /**
  * To see chat send button customization uncomment below line and comment other userCustomization const
  */
-//const userCustomization = ChatSendButtonCustomization;
+const userCustomization = ChatSendButtonCustomization;
 
 /**
  * To see participant panel customization uncomment below line and comment other userCustomization const

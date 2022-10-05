@@ -9,22 +9,70 @@
  information visit https://appbuilder.agora.io. 
 *********************************************
 */
-import {customize} from 'customization-api';
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native';
+import {
+  customize,
+  ChatSendButtonProps,
+  icons,
+  useChatUIControl,
+  useMessages,
+  config,
+} from 'customization-api';
+import {TouchableOpacity, Image} from 'react-native';
+import * as leoProfanity from 'leo-profanity';
 
-const ChatSendButton = () => {
-  return <View style={styles.container}></View>;
+const ChatSendButton = (props: ChatSendButtonProps) => {
+  const {
+    selectedChatUserId: selectedUserId,
+    message,
+    setMessage,
+  } = useChatUIControl();
+  const {sendMessage} = useMessages();
+  const onPress = () => {
+    if (!selectedUserId) {
+      sendMessage(leoProfanity.clean(message));
+      setMessage && setMessage('');
+    } else {
+      sendMessage(leoProfanity.clean(message), selectedUserId);
+      setMessage && setMessage('');
+    }
+  };
+  return (
+    <TouchableOpacity style={styles.container} onPress={onPress}>
+      <Image
+        source={{
+          uri: icons.send,
+        }}
+        style={styles.imgStyle}
+        resizeMode={'contain'}
+      />
+    </TouchableOpacity>
+  );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#90EE90',
-    marginLeft: 10,
     width: 30,
+    marginRight: 0,
     height: 30,
+    borderRadius: 30,
     alignSelf: 'center',
+    marginHorizontal: 10,
+    backgroundColor: '#90EE90',
+    display: 'flex',
     justifyContent: 'center',
+  },
+  imgStyle: {
+    tintColor: 'black',
+    width: '80%',
+    height: '80%',
+    alignSelf: 'center',
+    transform: [
+      {
+        translateX: -2,
+      },
+    ],
   },
 });
 
