@@ -17,7 +17,7 @@ import {
   RenderStateInterface,
   UidType,
 } from '../agora-rn-uikit';
-import {i18nInterface} from '../src/language/i18nTypes';
+import {I18nInterface} from '../src/language/i18nTypes';
 import {IconsInterface} from '../agora-rn-uikit/src/Controls/Icons';
 export type {RenderInterface, RenderStateInterface, UidType};
 export type {
@@ -51,7 +51,7 @@ export interface ChatCmpInterface {
   //extends BeforeAndAfterInterface
   chatBubble?: React.ComponentType<ChatBubbleProps>;
   chatInput?: React.ComponentType<ChatTextInputProps>;
-  chatSentButton?: React.ComponentType<ChatSendButtonProps>;
+  chatSendButton?: React.ComponentType<ChatSendButtonProps>;
 }
 
 export interface renderComponentInterface {
@@ -63,7 +63,7 @@ export interface renderComponentObjectInterface {
 }
 
 export type layoutComponent = React.ComponentType<{
-  renderData: RenderStateInterface['renderPosition'];
+  renderData: RenderStateInterface['activeUids'];
 }>;
 
 export interface layoutObjectBase {
@@ -132,7 +132,7 @@ export interface CustomizationApiInterface {
   /**
    * Internationlization
    */
-  i18n?: i18nInterface[];
+  i18n?: I18nInterface[];
   /**
    * Life cycle events
    */

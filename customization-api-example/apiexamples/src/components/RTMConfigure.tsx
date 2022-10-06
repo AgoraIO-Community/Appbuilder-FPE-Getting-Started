@@ -18,7 +18,7 @@ import {RtcContext} from '../../agora-rn-uikit';
 import {Platform} from 'react-native';
 import {backOff} from 'exponential-backoff';
 import {useString} from '../utils/useString';
-import {useIsAndroid, useIsWeb} from '../utils/common';
+import {isAndroid, isWebInternal} from '../utils/common';
 import {useRender, useRtc} from 'customization-api';
 import {
   safeJsonParse,
@@ -37,23 +37,21 @@ export enum UserType {
 }
 
 const RtmConfigure = (props: any) => {
-  const isWeb = useIsWeb();
-  const isAndroid = useIsAndroid();
   const localUid = useLocalUid();
   const {callActive} = props;
   const {rtcProps} = useContext(PropsContext);
   const {RtcEngine, dispatch} = useRtc();
-  const {renderList, renderPosition} = useRender();
+  const {renderList, activeUids} = useRender();
   const renderListRef = useRef({renderList: renderList});
-  const renderPositionRef = useRef({renderPosition: renderPosition});
+  const activeUidsRef = useRef({activeUids: activeUids});
 
   /**
    * inside event callback state won't have latest value.
    * so creating ref to access the state
    */
   useEffect(() => {
-    renderPositionRef.current.renderPosition = renderPosition;
-  }, [renderPosition]);
+    activeUidsRef.current.activeUids = activeUids;
+  }, [activeUids]);
 
   useEffect(() => {
     renderListRef.current.renderList = renderList;
@@ -88,7 +86,7 @@ const RtmConfigure = (props: any) => {
       engine.current.leaveChannel(rtcProps.channel);
     };
 
-    if (!isWeb()) return;
+    if (!isWebInternal()) return;
     window.addEventListener('beforeunload', handBrowserClose);
     // cleanup this component
     return () => {

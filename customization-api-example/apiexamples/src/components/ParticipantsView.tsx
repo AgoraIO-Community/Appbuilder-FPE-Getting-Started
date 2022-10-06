@@ -18,10 +18,9 @@ import AllHostParticipants from './participants/AllHostParticipants';
 import AllAudienceParticipants from './participants/AllAudienceParticipants';
 import CurrentLiveStreamRequestsView from '../subComponents/livestream/CurrentLiveStreamRequestsView';
 import {useString} from '../utils/useString';
-import {useIsWeb} from '../utils/common';
+import {isWebInternal} from '../utils/common';
 import {useMeetingInfo} from './meeting-info/useMeetingInfo';
 import {useLiveStreamDataContext} from './contexts/LiveStreamDataContext';
-const isWeb = useIsWeb();
 const ParticipantView = () => {
   const {liveStreamData, audienceUids, hostUids} = useLiveStreamDataContext();
   const {rtcProps} = useContext(PropsContext);
@@ -41,11 +40,10 @@ const ParticipantView = () => {
     Dimensions.get('window').width > Dimensions.get('window').height,
   ]);
   const isSmall = dim[0] < 700;
-
   return (
     <View
       style={
-        isWeb
+        isWebInternal()
           ? isSmall
             ? style.participantViewNative
             : style.participantView
@@ -234,14 +232,14 @@ const style = StyleSheet.create({
   },
   participantText: {
     lineHeight: 24,
-    fontSize: isWeb() ? 18 : 16,
+    fontSize: isWebInternal() ? 18 : 16,
     flexDirection: 'row',
     letterSpacing: 0.3,
     color: $config.PRIMARY_FONT_COLOR,
     fontWeight: '300',
   },
   participantTextSmall: {
-    fontSize: isWeb() ? 14 : 12,
+    fontSize: isWebInternal() ? 14 : 12,
   },
   dummyView: {
     flex: 0.5,

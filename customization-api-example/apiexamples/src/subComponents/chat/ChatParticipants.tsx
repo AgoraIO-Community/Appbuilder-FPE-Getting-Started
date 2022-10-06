@@ -10,7 +10,7 @@ import {
 import {RFValue} from 'react-native-responsive-fontsize';
 import TextWithTooltip from '../TextWithTooltip';
 import {useString} from '../../utils/useString';
-import {useIsIOS, useIsWeb} from '../../utils/common';
+import {isIOS, isWebInternal} from '../../utils/common';
 import {useChatNotification} from '../../components/chat-notification/useChatNotification';
 import {UidType, useLocalUid} from '../../../agora-rn-uikit';
 import {useRender} from 'customization-api';
@@ -82,8 +82,7 @@ const ChatParticipants = (props: any) => {
     </ScrollView>
   );
 };
-const isWeb = useIsWeb();
-const isIOS = useIsIOS();
+
 const style = StyleSheet.create({
   participantContainer: {
     flexDirection: 'row',
@@ -96,7 +95,7 @@ const style = StyleSheet.create({
   },
   participantText: {
     flex: 1,
-    fontWeight: isWeb() ? '500' : '700',
+    fontWeight: isWebInternal() ? '500' : '700',
     flexDirection: 'row',
     color: $config.PRIMARY_FONT_COLOR,
     textAlign: 'left',
@@ -118,4 +117,5 @@ const style = StyleSheet.create({
     top: 0,
   },
 });
+
 export default ChatParticipants;

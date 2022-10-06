@@ -18,7 +18,7 @@ import {SessionProvider} from './components/SessionContext';
 import {ImageBackground, SafeAreaView, StatusBar, Platform} from 'react-native';
 import ColorConfigure from './components/ColorConfigure';
 import Toast from '../react-native-toast-message';
-import ToastConfig from './subComponents/toastConfig';
+import ToastConfig from './subComponents/ToastConfig';
 import {isValidReactComponent} from './utils/common';
 import DimensionProvider from './components/dimension/DimensionProvider';
 import Error from './components/common/Error';

@@ -11,8 +11,8 @@
 */
 import React from 'react';
 import {Text} from 'react-native';
-import useIsMobileOrTablet from '../utils/useIsMobileOrTablet';
 import TextWithToolTipNative from './TextWithTooltip.native';
+import isMobileOrTablet from '../utils/isMobileOrTablet';
 /**
  * Text with tooltip
  * web - used title attribute to show the tooltip
@@ -40,5 +40,4 @@ const style = {
  * Web and Desktop : using the TextWithToolTip - which have the browser tooltip
  * Mobile and Mobile Web : using the TextWithToolTipNative - which have the custom tooltip using modal
  */
-const isMobileOrTablet = useIsMobileOrTablet();
 export default isMobileOrTablet() ? TextWithToolTipNative : TextWithToolTip;

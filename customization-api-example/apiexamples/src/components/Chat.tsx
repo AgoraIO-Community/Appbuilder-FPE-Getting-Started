@@ -23,7 +23,7 @@ import ChatParticipants from '../subComponents/chat/ChatParticipants';
 import ColorContext from './ColorContext';
 import {useChatNotification} from './chat-notification/useChatNotification';
 import {useString} from '../utils/useString';
-import {useIsIOS, isValidReactComponent, useIsWeb} from '../utils/common';
+import {isIOS, isValidReactComponent, isWebInternal} from '../utils/common';
 import {useChatUIControl} from './chat-ui/useChatUIControl';
 import {useCustomization} from 'customization-implementation';
 import {UidType} from '../../agora-rn-uikit';
@@ -43,7 +43,6 @@ const Chat = (props?: ChatProps) => {
   // commented for v1 release
   // const groupChatLabel = useString('groupChatLabel')();
   // const privateChatLabel = useString('privateChatLabel')();
-  const isWeb = useIsWeb();
   const groupChatLabel = 'Group';
   const privateChatLabel = 'Private';
   const [dim, setDim] = useState([
@@ -143,7 +142,7 @@ const Chat = (props?: ChatProps) => {
     <>
       <View
         style={
-          isWeb()
+          isWebInternal()
             ? !isSmall
               ? style.chatView
               : style.chatViewNative
@@ -238,7 +237,7 @@ const Chat = (props?: ChatProps) => {
     </>
   );
 };
-const isIOS = useIsIOS();
+
 const style = StyleSheet.create({
   chatView: {
     width: '20%',
