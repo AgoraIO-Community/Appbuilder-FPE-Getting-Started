@@ -18,7 +18,7 @@ import {
   ParticipantsView,
   Chat,
   SettingsView,
-  useIsWeb,
+  isWeb,
   SidePanelType,
 } from 'customization-api';
 import React from 'react';
@@ -27,7 +27,6 @@ import Notice from '../notice';
 
 const VideoCallPage = () => {
   const {sidePanel} = useSidePanel();
-  const isWeb = useIsWeb();
 
   return (
     <View style={{flex: 1}}>

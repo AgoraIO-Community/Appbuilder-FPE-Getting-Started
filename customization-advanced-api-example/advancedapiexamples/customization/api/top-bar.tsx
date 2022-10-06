@@ -16,7 +16,7 @@ import {
   useMeetingInfo,
   useRecording,
   NavBarComponentsArray,
-  config,
+  $config,
 } from 'customization-api';
 import Notice from '../notice';
 
@@ -51,7 +51,7 @@ const TopBar = () => {
           <View style={[style.navItem]}>
             <ParticipantsIconButton />
           </View>
-          {config.CHAT ? (
+          {$config.CHAT ? (
             <>
               <View style={[style.navItem]}>
                 <ChatIconButton />

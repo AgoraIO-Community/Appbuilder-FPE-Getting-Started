@@ -24,7 +24,7 @@ import {
   useMessages,
   useChatUIControl,
   useLocalUid,
-  config,
+  $config,
 } from 'customization-api';
 import * as leoProfanity from 'leo-profanity';
 
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 2,
     paddingHorizontal: 10,
-    borderColor: config.PRIMARY_COLOR,
+    borderColor: $config.PRIMARY_COLOR,
   },
   btnContainer: {
     flexDirection: 'row',

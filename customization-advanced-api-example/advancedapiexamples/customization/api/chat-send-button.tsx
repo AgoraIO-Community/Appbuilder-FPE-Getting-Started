@@ -17,7 +17,7 @@ import {
   icons,
   useChatUIControl,
   useMessages,
-  config,
+  $config,
 } from 'customization-api';
 import {TouchableOpacity, Image} from 'react-native';
 import * as leoProfanity from 'leo-profanity';

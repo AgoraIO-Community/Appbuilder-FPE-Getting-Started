@@ -17,7 +17,7 @@ import {
   RenderInterface,
   NameWithMicIcon,
   UiKitMaxVideoView,
-  config,
+  $config,
 } from 'customization-api';
 
 interface MaxVideoRendererInterface {
@@ -28,7 +28,7 @@ const CustomVideoView: React.FC<MaxVideoRendererInterface> = ({user}) => {
     <View style={style.container}>
       <NetworkQualityPill
         user={user}
-        primaryColor={config.PRIMARY_COLOR}
+        primaryColor={$config.PRIMARY_COLOR}
         rootStyle={{
           marginLeft: 10,
           top: 8,
@@ -71,7 +71,7 @@ const style = StyleSheet.create({
   flex1: {flex: 1},
   nameHolder: {
     marginTop: -25,
-    backgroundColor: config.SECONDARY_FONT_COLOR + 'aa',
+    backgroundColor: $config.SECONDARY_FONT_COLOR + 'aa',
     alignSelf: 'flex-end',
     paddingHorizontal: 8,
     height: 25,
@@ -82,7 +82,7 @@ const style = StyleSheet.create({
     maxWidth: '100%',
   },
   name: {
-    color: config.PRIMARY_FONT_COLOR,
+    color: $config.PRIMARY_FONT_COLOR,
     lineHeight: 25,
     fontWeight: '700',
     flexShrink: 1,
@@ -92,7 +92,7 @@ const style = StyleSheet.create({
     height: 20,
     borderRadius: 15,
     marginHorizontal: 10,
-    backgroundColor: config.SECONDARY_FONT_COLOR,
+    backgroundColor: $config.SECONDARY_FONT_COLOR,
     display: 'flex',
     alignSelf: 'center',
     justifyContent: 'center',
@@ -113,16 +113,16 @@ const style = StyleSheet.create({
   fallBackInnerContainer: {
     width: 80,
     height: 80,
-    backgroundColor: config.PRIMARY_COLOR,
+    backgroundColor: $config.PRIMARY_COLOR,
     alignSelf: 'center',
     alignContent: 'center',
     justifyContent: 'center',
     borderRadius: 50,
-    shadowColor: config.PRIMARY_COLOR,
+    shadowColor: $config.PRIMARY_COLOR,
     shadowRadius: 20,
   },
   fallBackTextStyle: {
-    color: config.SECONDARY_FONT_COLOR,
+    color: $config.SECONDARY_FONT_COLOR,
     fontSize: 20,
     alignSelf: 'center',
     textAlign: 'center',

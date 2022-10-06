@@ -17,7 +17,7 @@ import {
   useChatUIControl,
   useMessages,
   TextInput,
-  config,
+  $config,
 } from 'customization-api';
 import * as leoProfanity from 'leo-profanity';
 
@@ -49,7 +49,7 @@ const ChatInput = (props: ChatTextInputProps) => {
         blurOnSubmit={false}
         onSubmitEditing={onSubmitEditing}
         placeholder={chatMessageInputPlaceholder}
-        placeholderTextColor={config.PRIMARY_FONT_COLOR}
+        placeholderTextColor={$config.PRIMARY_FONT_COLOR}
         autoCorrect={false}
       />
     </>
@@ -60,9 +60,9 @@ const styles = StyleSheet.create({
   textInputStyle: {
     borderRadius: 10,
     backgroundColor: '#90EE90',
-    borderColor: config.PRIMARY_COLOR,
+    borderColor: $config.PRIMARY_COLOR,
     borderWidth: 1,
-    color: config.PRIMARY_FONT_COLOR,
+    color: $config.PRIMARY_FONT_COLOR,
     textAlign: 'left',
     height: 40,
     paddingVertical: 10,

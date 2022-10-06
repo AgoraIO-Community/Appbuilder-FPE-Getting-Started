@@ -20,7 +20,7 @@ import LayoutCustomization from './api/custom-layout';
 /**
  * To see video call customization uncomment below line and comment other userCustomization const
  */
-//const userCustomization = VideoCallCustomization;
+const userCustomization = VideoCallCustomization;
 
 /**
  * To see top bar customization uncomment below line and comment other userCustomization const
@@ -55,6 +55,6 @@ import LayoutCustomization from './api/custom-layout';
 /**
  * To see layout customization uncomment below line and comment other userCustomization const
  */
-const userCustomization = LayoutCustomization;
+//const userCustomization = LayoutCustomization;
 
 export default userCustomization;
