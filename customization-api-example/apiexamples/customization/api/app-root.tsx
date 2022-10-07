@@ -82,8 +82,8 @@ const styles = StyleSheet.create({
 });
 
 const customization = customize({
-  appRoot: AppRootProvider,
   components: {
+    appRoot: AppRootProvider,
     videoCall: VideoCallPage,
   },
 });
