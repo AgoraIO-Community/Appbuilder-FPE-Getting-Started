@@ -1,3 +1,3 @@
-# Appbuilder-FPE-Getting-Started
+# App-Builder-Customization-API-Examples
 
-Getting started sample apps for App builder FPE
+Getting started sample apps for App builder Customization
