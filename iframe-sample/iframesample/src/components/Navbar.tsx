@@ -30,8 +30,8 @@ import LiveStreamContext from './livestream';
 import {numFormatter} from '../utils/index';
 import {useLayout} from '../utils/useLayout';
 import {useChatNotification} from '../components/chat-notification/useChatNotification';
-import useCustomLayout from '../pages/video-call/CustomLayout';
-import {isIOS, isValidReactComponent, isWeb} from '../utils/common';
+import useLayoutsData from '../pages/video-call/useLayoutsData';
+import {isIOS, isValidReactComponent, isWebInternal} from '../utils/common';
 import {useChangeDefaultLayout} from '../pages/video-call/DefaultLayouts';
 import {useRecording} from '../subComponents/recording/useRecording';
 import LayoutIconDropdown from '../subComponents/LayoutIconDropdown';
@@ -49,7 +49,7 @@ import Styles from './styles';
 const RenderSeparator = () => {
   const {getDimensionData} = useContext(DimensionContext);
   const {isDesktop} = getDimensionData();
-  return isWeb && isDesktop ? (
+  return isWebInternal() && isDesktop ? (
     <View style={style.navItem}>
       <View style={style.navItemSeparator}></View>
     </View>
@@ -60,6 +60,7 @@ const RenderSeparator = () => {
 
 const ParticipantsCountView = () => {
   const {onlineUsersCount} = useContext(ChatContext);
+
   return (
     <>
       {onlineUsersCount !== 0 && (
@@ -77,7 +78,7 @@ const ParticipantsCountView = () => {
   );
 };
 
-interface ParticipantsIconButtonInterface {
+interface ParticipantsIconButtonProps {
   liveStreamingRequestAlertIconPosition?: {
     top?: number;
     right?: number;
@@ -91,10 +92,10 @@ interface ParticipantsIconButtonInterface {
     buttonTemplateName?: ButtonTemplateName,
   ) => JSX.Element;
 }
-const ParticipantsIconButton = (props: ParticipantsIconButtonInterface) => {
+const ParticipantsIconButton = (props: ParticipantsIconButtonProps) => {
   const {
     liveStreamingRequestAlertIconPosition = {
-      top: isWeb ? -10 : 2,
+      top: isWebInternal() ? -10 : 2,
       left: undefined,
       right: undefined,
       bottom: undefined,
@@ -153,7 +154,7 @@ const ParticipantsIconButton = (props: ParticipantsIconButtonInterface) => {
   );
 };
 
-interface ChatIconButtonInterface {
+interface ChatIconButtonProps {
   badgeContainerPosition?: {
     top?: number;
     right?: number;
@@ -170,10 +171,10 @@ interface ChatIconButtonInterface {
   ) => JSX.Element;
 }
 
-const ChatIconButton = (props: ChatIconButtonInterface) => {
+const ChatIconButton = (props: ChatIconButtonProps) => {
   const {
     badgeContainerPosition = {
-      top: isWeb ? -10 : 2,
+      top: isWebInternal() ? -10 : 2,
       left: undefined,
       right: undefined,
       bottom: undefined,
@@ -248,7 +249,7 @@ const ChatIconButton = (props: ChatIconButtonInterface) => {
   );
 };
 
-interface LayoutIconButtonInterface {
+interface LayoutIconButtonProps {
   modalPosition?: {
     top?: number;
     right?: number;
@@ -262,18 +263,19 @@ interface LayoutIconButtonInterface {
   ) => JSX.Element;
 }
 
-const LayoutIconButton = (props: LayoutIconButtonInterface) => {
+const LayoutIconButton = (props: LayoutIconButtonProps) => {
   const {modalPosition} = props;
+
   //commented for v1 release
   //const layoutLabel = useString('layoutLabel')('');
   const layoutLabel = 'Layouts';
   const defaultTemplateValue = useButtonTemplate().buttonTemplateName;
   const {buttonTemplateName = defaultTemplateValue} = props;
   const [showDropdown, setShowDropdown] = useState(false);
-  const layouts = useCustomLayout();
+  const layouts = useLayoutsData();
   const changeLayout = useChangeDefaultLayout();
-  const {activeLayoutName} = useLayout();
-  const layout = layouts.findIndex((item) => item.name === activeLayoutName);
+  const {currentLayout} = useLayout();
+  const layout = layouts.findIndex((item) => item.name === currentLayout);
   const renderLayoutIcon = (showDropdown?: boolean) => {
     let onPress = () => {};
     let renderContent = [];
@@ -348,7 +350,10 @@ const Navbar = () => {
   //commented for v1 release
   //const recordingLabel = useString('recordingLabel')();
   const recordingLabel = 'Recording';
-  const {meetingTitle} = useMeetingInfo();
+  const {
+    data: {meetingTitle},
+  } = useMeetingInfo();
+
   const {isRecordingActive} = useRecording();
   const {getDimensionData} = useContext(DimensionContext);
   const {isDesktop} = getDimensionData();
@@ -356,9 +361,9 @@ const Navbar = () => {
   return (
     <View
       style={[
-        isWeb ? style.navHolder : style.navHolderNative,
+        isWebInternal() ? style.navHolder : style.navHolderNative,
         {backgroundColor: $config.SECONDARY_FONT_COLOR + 80},
-        isWeb
+        isWebInternal()
           ? {
               justifyContent: isMobileOrTablet() ? 'space-between' : 'flex-end',
             }
@@ -382,7 +387,7 @@ const Navbar = () => {
           {!isMobileOrTablet() && (
             <Text
               style={{
-                fontSize: isWeb ? 16 : 12,
+                fontSize: isWebInternal() ? 16 : 12,
                 color: '#FD0845',
                 fontWeight: '400',
                 alignSelf: 'center',
@@ -400,11 +405,11 @@ const Navbar = () => {
         style={[
           style.roomNameContainer,
           // @ts-ignore
-          isWeb && !isMobileOrTablet()
+          isWebInternal() && !isMobileOrTablet()
             ? {transform: [{translateX: '50%'}]}
             : {},
         ]}>
-        {isWeb ? (
+        {isWebInternal() ? (
           <View
             style={{
               flexDirection: 'row',
@@ -445,7 +450,11 @@ const Navbar = () => {
             style.navContainer,
             {
               minWidth:
-                isWeb && isDesktop ? 300 : isMobileOrTablet() ? 160 : 200,
+                isWebInternal() && isDesktop
+                  ? 300
+                  : isMobileOrTablet()
+                  ? 160
+                  : 200,
             },
           ]}>
           <ParticipantsCountView />
@@ -480,14 +489,15 @@ const Navbar = () => {
     </View>
   );
 };
-export const NavBarComponentsArray: [
+type NavBarComponentsArrayProps = [
   (props: CopyJoinInfoProps) => JSX.Element,
   () => JSX.Element,
-  (props: ParticipantsIconButtonInterface) => JSX.Element,
-  (props: ChatIconButtonInterface) => JSX.Element,
-  (props: LayoutIconButtonInterface) => JSX.Element,
+  (props: ParticipantsIconButtonProps) => JSX.Element,
+  (props: ChatIconButtonProps) => JSX.Element,
+  (props: LayoutIconButtonProps) => JSX.Element,
   (props: SettingsIconButtonProps) => JSX.Element,
-] = [
+];
+export const NavBarComponentsArray: NavBarComponentsArrayProps = [
   CopyJoinInfo,
   ParticipantsCountView,
   ParticipantsIconButton,
@@ -495,6 +505,7 @@ export const NavBarComponentsArray: [
   LayoutIconButton,
   SettingsIconButton,
 ];
+
 const style = StyleSheet.create({
   backDrop: {
     position: 'absolute',
@@ -568,7 +579,7 @@ const style = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: $config.PRIMARY_COLOR,
     color: $config.SECONDARY_FONT_COLOR,
-    fontFamily: isIOS ? 'Helvetica' : 'sans-serif',
+    fontFamily: isIOS() ? 'Helvetica' : 'sans-serif',
     borderRadius: 10,
     position: 'absolute',
     paddingHorizontal: 5,
@@ -586,7 +597,7 @@ const style = StyleSheet.create({
     justifyContent: 'center',
   },
   chipText: {
-    fontFamily: isIOS ? 'Helvetica' : 'sans-serif',
+    fontFamily: isIOS() ? 'Helvetica' : 'sans-serif',
     fontSize: 12,
     color: $config.SECONDARY_FONT_COLOR,
   },
@@ -600,7 +611,7 @@ const style = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: isWeb
+    backgroundColor: isWebInternal()
       ? $config.SECONDARY_FONT_COLOR
       : $config.SECONDARY_FONT_COLOR + '00',
     paddingVertical: 4,

@@ -21,8 +21,8 @@ import Toast from '../../react-native-toast-message';
 import {ErrorContext} from '../components/common';
 import ShareLink from '../components/Share';
 import Logo from '../components/common/Logo';
-import {isWeb, isValidReactComponent} from '../utils/common';
-import {useFpe, useMeetingInfo} from 'fpe-api';
+import {isWebInternal, isValidReactComponent} from '../utils/common';
+import {useCustomization} from 'customization-implementation';
 import {useString} from '../utils/useString';
 import useCreateMeeting from '../utils/useCreateMeeting';
 import {CreateProvider} from './create/useCreate';
@@ -30,10 +30,9 @@ import useJoinMeeting from '../utils/useJoinMeeting';
 import SDKEvents from '../utils/SdkEvents';
 import {MeetingInfoDefaultValue} from '../components/meeting-info/useMeetingInfo';
 import {useSetMeetingInfo} from '../components/meeting-info/useSetMeetingInfo';
-import useNavigateTo from '../utils/useNavigateTo';
 
 const Create = () => {
-  const {CreateComponent} = useFpe((data) => {
+  const {CreateComponent} = useCustomization((data) => {
     let components: {
       CreateComponent?: React.ElementType;
     } = {};
@@ -62,10 +61,6 @@ const Create = () => {
   const [roomCreated, setRoomCreated] = useState(false);
   const createRoomFun = useCreateMeeting();
   const {setMeetingInfo} = useSetMeetingInfo();
-  const {
-    meetingPassphrase: {attendee, host, pstn},
-  } = useMeetingInfo();
-  const navigateTo = useNavigateTo();
   //commented for v1 release
   // const createdText = useString('meetingCreatedNotificationLabel')();
   // const hostControlsToggle = useString<boolean>('hostControlsToggle');
@@ -88,30 +83,30 @@ const Create = () => {
   const haveMeetingID = 'Have a Meeting ID?';
 
   useEffect(() => {
-    if (isWeb) {
+    if (isWebInternal()) {
       document.title = $config.APP_NAME;
     }
-    SDKEvents.on('joinMeetingWithPhrase', (phrase) => {
-      console.log(
-        'SDKEvents: joinMeetingWithPhrase event called', phrase
-      );
-      setMeetingInfo(MeetingInfoDefaultValue);
-      navigateTo(phrase)
-    });
+    const unbind = SDKEvents.on(
+      'joinMeetingWithPhrase',
+      (phrase, resolve, reject) => {
+        console.log('SDKEvents: joinMeetingWithPhrase event called', phrase);
+        try {
+          setMeetingInfo(MeetingInfoDefaultValue);
+          history.push(phrase);
+          resolve();
+        } catch (error) {
+          reject(error);
+        }
+      },
+    );
     return () => {
-      SDKEvents.off('joinMeetingWithPhrase');
+      unbind();
     };
   }, []);
 
   const showShareScreen = () => {
     setRoomCreated(true);
   };
-
-  useEffect(() => {
-    if (attendee) {
-      SDKEvents.emit('create', host, attendee, pstn);
-    }
-  }, [attendee]);
 
   const createRoomAndNavigateToShare = async (
     roomTitle: string,

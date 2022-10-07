@@ -15,7 +15,7 @@ import {Platform} from 'react-native';
 import Toast, {BaseToast} from '../../react-native-toast-message';
 import isMobileOrTablet from '../utils/isMobileOrTablet';
 
-const toastConfig = {
+const ToastConfig = {
   /* 
       overwrite 'success' type, 
       modifying the existing `BaseToast` component
@@ -42,4 +42,4 @@ const toastConfig = {
   ),
 };
 
-export default toastConfig;
+export default ToastConfig;

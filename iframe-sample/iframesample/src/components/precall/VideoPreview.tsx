@@ -10,15 +10,15 @@
 *********************************************
 */
 
+import {useRender} from 'customization-api';
 import React from 'react';
 import {View} from 'react-native';
 import {MaxVideoView} from '../../../agora-rn-uikit';
-import useUserList from '../../utils/useUserList';
 
 const VideoPreview: React.FC = () => {
-  const {renderList, renderPosition} = useUserList();
+  const {renderList, activeUids} = useRender();
 
-  const [maxUid] = renderPosition;
+  const [maxUid] = activeUids;
 
   if (!maxUid) {
     return null;

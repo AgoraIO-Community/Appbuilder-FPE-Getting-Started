@@ -3,16 +3,24 @@ import SDKAppWrapper, {
   AppBuilderSdkApi,
   AppBuilderSdkApiInterface,
 } from './src/SDKAppWrapper';
+import SDKEvents from './src/utils/SdkEvents';
 import React from 'react';
 import * as RN from 'react-native-web';
-import jsonFile from './config.json';
 
-export * from 'fpe-api';
-export * from 'fpe-implementation';
+export * from 'customization-api';
+export * from 'customization-implementation';
 
 interface AppBuilderWebSdkInterface extends AppBuilderSdkApiInterface {}
 
-const AppBuilderWebSdkApi: AppBuilderWebSdkInterface = AppBuilderSdkApi;
+const AppBuilderWebSdkApi: AppBuilderWebSdkInterface = {
+  ...AppBuilderSdkApi,
+  // Override customize function for web-sdk
+  customize: (customization) => {
+    SDKEvents.on('addFpeInit', () => {
+      SDKEvents.emit('addFpe', customization);
+    });
+  },
+};
 
 // init code
 class AppBuilder extends HTMLElement {
@@ -31,7 +39,5 @@ class AppBuilder extends HTMLElement {
 
 customElements.define('app-builder', AppBuilder);
 
-let config: ConfigInterface = jsonFile as unknown as ConfigInterface;
-
-export {React, RN, config};
+export {React, RN};
 export default AppBuilderWebSdkApi;
