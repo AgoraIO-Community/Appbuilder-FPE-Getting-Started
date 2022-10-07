@@ -9,22 +9,21 @@
  information visit https://appbuilder.agora.io. 
 *********************************************
 */
-import React, {useEffect} from 'react';
-import {View, StyleSheet} from 'react-native';
+import React, {useState} from 'react';
 import {
   useMeetingInfo,
-  usePropsContext,
   ControlsComponentsArray,
-  useRtcContext,
-  useRenderContext,
-  CustomEvents,
-} from 'fpe-api';
-import {BtnTemplate} from 'agora-rn-uikit';
+  useRtc,
+  useRender,
+  customEvents,
+} from 'customization-api';
+import {View, Dimensions, StyleSheet, Platform} from 'react-native';
+import isMobileOrTablet from '../../src/utils/isMobileOrTablet';
+import {useEffect} from 'react';
+import {BtnTemplate} from '../../agora-rn-uikit';
 import CustomIcons from './custom_icon';
 
-const Controls = () => {
-  const {isHost} = useMeetingInfo();
-  const {rtcProps} = usePropsContext();
+const CustomBottomBar = () => {
   const [
     LocalAudioMute,
     LocalVideoMute,
@@ -34,23 +33,37 @@ const Controls = () => {
     LocalEndcall,
     LiveStreamControls,
   ] = ControlsComponentsArray;
-  const {dispatch} = useRtcContext();
-  const {renderPosition} = useRenderContext();
+
+  let onLayout = (e: any) => {
+    setDim([e.nativeEvent.layout.width, e.nativeEvent.layout.height]);
+  };
+  const [dim, setDim] = useState([
+    Dimensions.get('window').width,
+    Dimensions.get('window').height,
+    Dimensions.get('window').width > Dimensions.get('window').height,
+  ]);
+  const isDesktop = dim[0] > 1224;
+  const {
+    data: {isHost},
+  } = useMeetingInfo();
+
+  const {dispatch} = useRtc();
+  const {activeUids} = useRender();
 
   const addIframe = (triggerEvent: boolean) => {
-    if (!renderPosition.filter((i) => i === 0).length) {
+    if (!activeUids.filter((i) => i === 0).length) {
       dispatch({
         type: 'AddCustomContent',
         value: [0, {type: 'iframe'}],
       });
       if (triggerEvent) {
-        CustomEvents.send('Addiframe', {level: 3, value: JSON.stringify({})});
+        customEvents.send('Addiframe', JSON.stringify({}), 3);
       }
     }
   };
 
   useEffect(() => {
-    CustomEvents.on('Addiframe', (data) => {
+    customEvents.on('Addiframe', (data) => {
       if (data) {
         addIframe(false);
       }
@@ -58,12 +71,20 @@ const Controls = () => {
   });
 
   return (
-    <View style={style.bottomBar}>
+    <View
+      style={[
+        style.controlsHolder,
+        {
+          paddingHorizontal: isDesktop ? '25%' : '1%',
+          backgroundColor: $config.SECONDARY_FONT_COLOR + 80,
+        },
+      ]}
+      onLayout={onLayout}>
       {isHost && (
         <View style={{alignSelf: 'center'}}>
           <BtnTemplate
             icon={CustomIcons.iframe}
-            style={{width: 32, height: 32, marginLeft: 6, marginTop: 8}}
+            style={{width: 32, height: 32, marginLeft: 8}}
             color={$config.PRIMARY_COLOR}
             btnText={'Iframe'}
             onPress={() => {
@@ -72,7 +93,7 @@ const Controls = () => {
           />
         </View>
       )}
-      {$config.EVENT_MODE && rtcProps.role == 2 ? (
+      {$config.EVENT_MODE && !isHost ? (
         <LiveStreamControls showControls={true} />
       ) : (
         <>
@@ -81,9 +102,7 @@ const Controls = () => {
            * and audience is promoted to host, the audience can also
            * demote himself
            */}
-          {$config.EVENT_MODE && (
-            <LiveStreamControls showControls={rtcProps?.role == 1 && !isHost} />
-          )}
+          {$config.EVENT_MODE && <LiveStreamControls showControls={!isHost} />}
           <View style={{alignSelf: 'center'}}>
             <LocalAudioMute />
           </View>
@@ -92,14 +111,19 @@ const Controls = () => {
               <LocalVideoMute />
             </View>
           )}
-          {isHost && $config.CLOUD_RECORDING && (
-            <View style={{alignSelf: 'baseline'}}>
-              <Recording />
-            </View>
-          )}
-          {!$config.AUDIO_ROOM && (
+          {!$config.AUDIO_ROOM && isMobileOrTablet() && (
             <View style={{alignSelf: 'center'}}>
               <LocalSwitchCamera />
+            </View>
+          )}
+          {$config.SCREEN_SHARING && !isMobileOrTablet() && (
+            <View style={{alignSelf: 'center'}}>
+              <ScreenshareButton />
+            </View>
+          )}
+          {isHost && $config.CLOUD_RECORDING && (
+            <View style={{alignSelf: 'center'}}>
+              <Recording />
             </View>
           )}
         </>
@@ -112,33 +136,18 @@ const Controls = () => {
 };
 
 const style = StyleSheet.create({
-  bottomBar: {
-    flex: 1,
-    paddingHorizontal: '1%',
-    backgroundColor: $config.SECONDARY_FONT_COLOR + '80',
+  // @ts-ignore
+  controlsHolder: {
+    flex: Platform.OS === 'web' ? 1.3 : 1.6,
+    minHeight: 80,
+    maxHeight: '8%',
+    backgroundColor: '#f1f4f9',
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     position: 'relative',
     margin: 0,
-    minHeight: 40,
     bottom: 0,
-  },
-  localButton: {
-    backgroundColor: $config.SECONDARY_FONT_COLOR,
-    borderRadius: 2,
-    borderColor: $config.PRIMARY_COLOR,
-    width: 40,
-    height: 40,
-    display: 'flex',
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonIcon: {
-    width: 35,
-    height: 35,
-    tintColor: $config.PRIMARY_COLOR,
   },
 });
 
-export default Controls;
+export default CustomBottomBar;
