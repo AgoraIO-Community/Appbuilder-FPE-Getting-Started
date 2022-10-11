@@ -63,7 +63,7 @@ buck-out/
 /ios/Pods/
 
 #UI Kit
-#agora-rn-uikit/
+agora-rn-uikit/
 
 #built website
 dist/
