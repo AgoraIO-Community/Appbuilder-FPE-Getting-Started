@@ -31,6 +31,12 @@ The following code is a part of the [Customization-API quickstart guide](https:/
 
 5. Select `development build` to start a dev-server.
 
+## To modify sample customization:
+
+1. Open `apiexamples/customization/`
+
+2. Modify the customization as necessary.
+
 ## To remove the customization:
 
 1. Open your terminal in project root folder
