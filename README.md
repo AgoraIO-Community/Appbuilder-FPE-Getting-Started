@@ -4,7 +4,7 @@ The following code is a part of the [Customization-API quickstart guide](https:/
 
 ## To setup the example project:
 
-1. Open your terminal in project root folder
+1. Open your terminal in current project directory
 
 2. Run `npm install`
 
@@ -37,6 +37,4 @@ The following code is a part of the [Customization-API quickstart guide](https:/
 
 ## To remove the customization:
 
-1. Open your terminal in project root folder
-
-2. Run `npm run remove-customize`
+1. Run `npm run remove-customize`
