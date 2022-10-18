@@ -21,15 +21,13 @@ The following code is a part of the [Customization-API quickstart guide](https:/
 
 ## To run the code:
 
-1. Open your terminal in `apiexamples`
+1. Run `npm start`
 
-2. Run `npm start`
+2. Navigate to `build` on the cli menu presented.
 
-3. Navigate to `build` on the cli menu presented.
+3. Select preferred platform.
 
-4. Select preferred platform.
-
-5. Select `development build` to start a dev-server.
+4. Select `development build` to start a dev-server.
 
 ## To modify sample customization:
 
