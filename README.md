@@ -4,20 +4,20 @@ The following code is a part of the [Customization-API quickstart guide](https:/
 
 ## To setup the example project:
 
-1. Open your terminal in root folder
+1. Open your terminal in project root folder
 
 2. Run `npm install`
 
 ## To load sample customization:
 
-1. npm run load-customize -- 'folder_name'
+1. `npm run load-customize -- 'folder_name'`
 
    In folder_name pass the customize folder which you want to load it.
 
    examples
 
-   1. npm run load-customize -- customize-video-call-basic
-   2. npm run load-customize -- customize-bottom-bar-basic
+   1. `npm run load-customize -- customize-video-call-basic`
+   2. `npm run load-customize -- customize-bottom-bar-basic`
 
 ## To run the code:
 
@@ -31,8 +31,8 @@ The following code is a part of the [Customization-API quickstart guide](https:/
 
 5. Select `development build` to start a dev-server.
 
-## To remote the customization:
+## To remove the customization:
 
-1. Open your terminal in root folder
+1. Open your terminal in project root folder
 
 2. Run `npm run remove-customize`
