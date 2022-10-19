@@ -19,7 +19,7 @@ const TopBar = () => {
       <View style={styles.textContainer}>
         <Text style={styles.textStyle}>
           Here is your new top bar component. Use app-state and sub-components
-          to customize your top bar
+          to customize your top bar.
         </Text>
       </View>
     </View>

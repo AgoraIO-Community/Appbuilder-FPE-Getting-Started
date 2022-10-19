@@ -25,6 +25,17 @@ const ParticipantsPanel = () => {
     </View>
   );
 };
+
+const customization = customize({
+  components: {
+    videoCall: {
+      participantsPanel: ParticipantsPanel,
+    },
+  },
+});
+
+export default customization;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -49,13 +60,3 @@ const styles = StyleSheet.create({
     lineHeight: 30,
   },
 });
-
-const customization = customize({
-  components: {
-    videoCall: {
-      participantsPanel: ParticipantsPanel,
-    },
-  },
-});
-
-export default customization;

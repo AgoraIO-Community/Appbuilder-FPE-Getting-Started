@@ -32,7 +32,7 @@ const customization = customize({
   components: {
     videoCall: {
       chat: {
-        chatSentButton: ChatSendButton,
+        chatSendButton: ChatSendButton,
       },
     },
   },

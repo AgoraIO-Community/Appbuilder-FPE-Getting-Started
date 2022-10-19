@@ -19,7 +19,7 @@ const VideoCallPage = () => {
       <View style={styles.textContainer}>
         <Text style={styles.textStyle}>
           Here is your new video call page. Use app-state and sub-components to
-          customize your video call page
+          customize your video call page.
         </Text>
       </View>
     </View>

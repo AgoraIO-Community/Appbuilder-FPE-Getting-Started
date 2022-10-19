@@ -19,7 +19,7 @@ const BottomBar = () => {
       <View style={styles.textContainer}>
         <Text style={styles.textStyle}>
           Here is your new bottom bar component. Use app-state and
-          sub-components to customize your bottom bar
+          sub-components to customize your bottom bar.
         </Text>
       </View>
     </View>

@@ -9,22 +9,35 @@
  information visit https://appbuilder.agora.io. 
 *********************************************
 */
-import { customize, useRtc } from 'customization-api';
-import React, { useEffect } from 'react';
+import { customize } from 'customization-api';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const CustomView = () => {
+const CustomVideoView = () => {
   return (
     <View style={styles.container}>
       <View style={styles.textContainer}>
         <Text style={styles.textStyle}>
           Here is your new video view component. Use app-state and
-          sub-components to customize your video view
+          sub-components to customize your video view.
         </Text>
       </View>
     </View>
   );
 };
+
+const customization = customize({
+  components: {
+    videoCall: {
+      customContent: {
+        rtc: CustomVideoView,
+      },
+    },
+  },
+});
+
+export default customization;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -46,28 +59,3 @@ const styles = StyleSheet.create({
     lineHeight: 30,
   },
 });
-
-const customization = customize({
-  components: {
-    videoCall: {
-      customContent: {
-        //customview is key
-        customview: CustomView,
-      },
-      useUserContext: function useUserContext() {
-        const { dispatch } = useRtc();
-        useEffect(() => {
-          dispatch({
-            type: 'AddCustomContent',
-            //value 0 = uid
-            //value 1 = user data
-            //type should match the customContent key otherwise it will fallback to default view
-            value: [new Date().getTime(), { name: 'user', type: 'customview' }],
-          });
-        }, []);
-      },
-    },
-  },
-});
-
-export default customization;

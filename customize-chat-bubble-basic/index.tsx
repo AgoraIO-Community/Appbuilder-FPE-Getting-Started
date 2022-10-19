@@ -19,7 +19,7 @@ const ChatBubble = () => {
       <View style={styles.textContainer}>
         <Text style={styles.textStyle}>
           Here is your new chat bubble component. Use app-state and
-          sub-components to customize your chat
+          sub-components to customize your chat.
         </Text>
       </View>
     </View>

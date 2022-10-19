@@ -4,7 +4,7 @@
   "scripts": {
     "start": "agora-app-builder-cli",
     "start:info": "agora-app-builder-cli --info",
-    "postinstall": "agora-app-builder-cli install",
+    "postinstall": "agora-app-builder-cli install && cd apiexamples && npm i leo-profanity --save",
     "load-customize": "agora-app-builder-cli import",
     "remove-customize": "agora-app-builder-cli fpe-remove"
   },

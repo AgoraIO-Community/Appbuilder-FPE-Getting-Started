@@ -10,49 +10,16 @@
 *********************************************
 */
 import { customize } from 'customization-api';
-import React, { useContext, useEffect, useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export interface AppRootInterface {
-  customKey1?: string;
-  customKey2?: string;
-}
-
-const AppRootContext = React.createContext<AppRootInterface>({
-  customKey1: 'default value 1',
-  customKey2: 'default value 2',
-});
-
-interface AppRootProviderProps {
-  children: React.ReactNode;
-}
-
-const AppRootProvider = (props: AppRootProviderProps) => {
-  const [customState, setCustomState] = useState<AppRootInterface>({});
-  useEffect(() => {
-    setCustomState({
-      customKey1: 'custom value 1',
-      customKey2: 'custom value 2',
-    });
-  }, []);
-  return (
-    <AppRootContext.Provider value={{ ...customState }}>
-      {props.children}
-    </AppRootContext.Provider>
-  );
-};
-
-const VideoCallPage = () => {
-  const { customKey1, customKey2 } = useContext(AppRootContext);
+const CustomLayout = () => {
   return (
     <View style={styles.container}>
       <View style={styles.textContainer}>
-        <Text style={[styles.textStyle, { fontWeight: 'bold' }]}>
-          Custom key 1 - {customKey1} {'\n'}
-          Custom key 2 - {customKey2} {'\n'}
-        </Text>
         <Text style={styles.textStyle}>
-          Here is your app-root sample usage.
+          Here is your new custom layout view. Use app-state and sub-components
+          to customize your layout.
         </Text>
       </View>
     </View>
@@ -61,8 +28,17 @@ const VideoCallPage = () => {
 
 const customization = customize({
   components: {
-    appRoot: AppRootProvider,
-    videoCall: VideoCallPage,
+    videoCall: {
+      customLayout: (defaultLayouts) => [
+        ...defaultLayouts,
+        {
+          component: CustomLayout,
+          label: 'Custom Layout',
+          name: 'CustomLayout',
+          iconName: 'clipboard',
+        },
+      ],
+    },
   },
 });
 
