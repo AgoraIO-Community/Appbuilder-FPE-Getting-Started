@@ -11,4 +11,5 @@ Changes done
 - Top bar component is overridden using the timer component
 
 Screenshot
+
 <img src="Screenshot.png" alt="screenshot" width="600"/>
