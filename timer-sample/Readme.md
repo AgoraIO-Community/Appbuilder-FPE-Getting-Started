@@ -10,6 +10,10 @@ Changes done
 
 - Top bar component is overridden using the timer component
 
+Demo link
+
+https://appbuilder-sample-fpe-events-git-timer-agoraio.vercel.app/
+
 Screenshot
 
 <img src="Screenshot.png" alt="screenshot" width="600"/>
