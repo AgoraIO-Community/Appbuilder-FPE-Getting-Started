@@ -35,6 +35,7 @@ const RenderSeparator = () => {
   );
 };
 
+//Timer component
 const Timer = () => {
   const [startTime, setStartTime] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -103,6 +104,7 @@ const CustomTopbar = () => {
   const {
     data: {meetingTitle},
   } = useMeetingInfo();
+  //built-in nav bar icon buttons
   const [
     CopyJoinInfo,
     ParticipantsCountView,
@@ -117,6 +119,7 @@ const CustomTopbar = () => {
 
   const isWebAOrDesktop = () => isWeb() || isDesktop();
 
+  //re-building the same topbar with timer
   return (
     <View
       style={[
@@ -346,6 +349,7 @@ const style = StyleSheet.create({
   },
 });
 
+//overriding the topbar component
 const userCustomization = customize({
   components: {
     videoCall: {
