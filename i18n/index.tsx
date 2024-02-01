@@ -432,6 +432,13 @@ const userCustomization = customize({
         requestAlreadyProcessed: "Request already processed.1",
       },
     },
+    {
+      label: "FR",
+      locale: "fr",
+      data: {
+        settings: "SettingsFR",
+      },
+    },
   ],
 });
 export default userCustomization;
