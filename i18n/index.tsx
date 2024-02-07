@@ -526,10 +526,10 @@ const userCustomization = customize({
 
         peoplePanelWaitingRoomRequestApprovalBtnTxt: "Admit1",
         peoplePanelWaitingRoomRequestDenyBtnTxt: "Deny1",
-        peoplePanelUserNotFoundLabel: "User not found",
-        peoplePanelStreamingRequestSectionHeader: "STREAMING REQUEST",
-        peoplePanelLivestreamingApprovalBtnText: "Accept",
-        peoplePanelLivestreamingDenyBtnText: "Deny",
+        peoplePanelUserNotFoundLabel: "User not found1",
+        peoplePanelStreamingRequestSectionHeader: "STREAMING REQUEST1",
+        peoplePanelLivestreamingApprovalBtnText: "Accept1",
+        peoplePanelLivestreamingDenyBtnText: "Deny1",
 
         waitingRoomApprovalRequiredToastHeading: "Approval Required1",
         waitingRoomApprovalRequiredToastSubHeading: (username) =>
