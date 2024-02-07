@@ -10,11 +10,6 @@ import {
 const userCustomization = customize({
   i18n: [
     {
-      label: "FR",
-      locale: "fr",
-      data: {},
-    },
-    {
       label: "Renamed",
       locale: "en-us",
       data: {
@@ -237,7 +232,7 @@ const userCustomization = customize({
         //settings panel
 
         //vb panel
-        vbPanelHeading: "Virtual Background22",
+        vbPanelHeading: "Virtual Background1",
         vbPanelInfo: (isCamOn: boolean) =>
           isCamOn
             ? "Camera is currently off. Selected background will be applied as soon as your camera turns on.1"
@@ -247,8 +242,8 @@ const userCustomization = customize({
         vbPanelOptionCustomText: "Custom1",
 
         //used in the videocall screen
-        vbPanelAppliedBtnText: "Applied22",
-        vbPanelApplyBtnText: "Apply22",
+        vbPanelAppliedBtnText: "Applied1",
+        vbPanelApplyBtnText: "Apply1",
 
         //custom file upload error toast
         vbPanelImageUploadErrorToastHeading: "Upload Failed1",
@@ -271,8 +266,8 @@ const userCustomization = customize({
 
         //bottom left toolbar items
         toolbarItemLayoutText: "Layout1",
-        toolbarItemLayoutOptionGridText: "Grid22",
-        toolbarItemLayoutOptionSidebarText: "Sidebar22",
+        toolbarItemLayoutOptionGridText: "Grid1",
+        toolbarItemLayoutOptionSidebarText: "Sidebar1",
         toolbarItemInviteText: "Invite1",
 
         //center toolbar items
@@ -347,43 +342,57 @@ const userCustomization = customize({
         toolbarItemPeopleText: "People1",
         toolbarItemChatText: "Chat1",
         toolbarItemSettingText: "Settings1",
+
+        livestreamingMicrophoneTooltipText: (isHandRaised) =>
+          isHandRaised
+            ? "Waiting for host to appove the request1"
+            : "Raise Hand in order to turn mic on1",
+        livestreamingCameraTooltipText: (isHandRaised) =>
+          isHandRaised
+            ? "Waiting for host to appove the request1"
+            : "Raise Hand in order to turn video on1",
+        livestreamingShareTooltipText: (isHandRaised) =>
+          isHandRaised
+            ? "Waiting for host to appove the request1"
+            : "Raise Hand in order to present1",
+
         //toolbar
 
         //videocall
 
         //invite title label - if only one user on the call
-        inviteTileWelcomeText: "Welcome22",
-        inviteTileNoElseJoinedYetText: "No one else has joined yet.22",
-        inviteTileCopyInviteBtnText: "COPY INVITATION22",
+        inviteTileWelcomeText: "Welcome1",
+        inviteTileNoElseJoinedYetText: "No one else has joined yet.1",
+        inviteTileCopyInviteBtnText: "COPY INVITATION1",
         //invite title label - if only one user on the call
 
         //invite popup
-        invitePopupHeading: "Invite others to join this room22",
-        invitePopupPrimaryBtnText: "COPY INVITATION22",
+        invitePopupHeading: "Invite others to join this room1",
+        invitePopupPrimaryBtnText: "COPY INVITATION1",
         //invite popup
 
-        pstnUserLabel: "PSTN User22",
+        pstnUserLabel: "PSTN User1",
 
         //video title network quality label
         //it will be displayed on hover
         videoTileNetworkQuailtyLabel: (quality: NetworkQualities) => {
           switch (quality) {
             case "unknown":
-              return "Network Unsupported22";
+              return "Network Unsupported1";
             case "excellent":
-              return "Excellent Network22";
+              return "Excellent Network1";
             case "good":
-              return "Good Network22";
+              return "Good Network1";
             case "bad":
-              return "Bad Network22";
+              return "Bad Network1";
             case "veryBad":
-              return "Very Bad Network22";
+              return "Very Bad Network1";
             case "unpublished":
-              return "Network Unpublished22";
+              return "Network Unpublished1";
             case "loading":
-              return "Network Loading22";
+              return "Network Loading1";
             default:
-              return "Loading22";
+              return "Loading1";
           }
         },
         //more button label on video tile and participant
@@ -468,9 +477,9 @@ const userCustomization = customize({
           "What language(s) are being spoken by everyone in this meeting?1",
         sttChangeSpokenLanguagePopupPrimaryBtnText: "CONFIRM1",
         sttChangeSpokenLanguagePopupDropdownInfo:
-          "Choose at least one language to proceed1",
-        sttChangeSpokenLanguagePopupDropdownError:
           "You can choose a maximum of two languages1",
+        sttChangeSpokenLanguagePopupDropdownError:
+          "Choose at least one language to proceed1",
         sttChangeSpokenLanguageText: "Change Spoken Language1",
 
         //transcript related
@@ -479,6 +488,21 @@ const userCustomization = customize({
         sttDownloadTranscriptBtnText: "Download Transcript1",
         sttSettingSpokenLanguageText: "Setting Spoken Language1",
         sttLanguageChangeInProgress: "Language Change is in progress...1",
+
+        sttTranscriptPanelSearchText: "Search1",
+        sttTranscriptPanelNoSearchResultsFoundText: "No search results found1",
+        sttTranscriptPanelViewLatestText: "View Latest1",
+
+        sttSpokenLanguageToastHeading: (action) => `Spoken Language ${action}1`,
+        sttSpokenLanguageToastSubHeading: ({
+          action,
+          newLanguage,
+          oldLanguage,
+          username,
+        }) =>
+          action === "Set"
+            ? `${username} has set the spoken language to "${newLanguage}"1`
+            : `${username} changed the spoken language from "${oldLanguage}" to ${newLanguage}1`,
 
         //Side panel labels
         peoplePanelHeaderText: "People1",
@@ -499,6 +523,19 @@ const userCustomization = customize({
 
         peoplePanelMeText: "Me1",
         peoplePanelPresenterText: "Presenter1",
+
+        peoplePanelWaitingRoomRequestApprovalBtnTxt: "Admit1",
+        peoplePanelWaitingRoomRequestDenyBtnTxt: "Deny1",
+        peoplePanelUserNotFoundLabel: "User not found",
+        peoplePanelStreamingRequestSectionHeader: "STREAMING REQUEST",
+        peoplePanelLivestreamingApprovalBtnText: "Accept",
+        peoplePanelLivestreamingDenyBtnText: "Deny",
+
+        waitingRoomApprovalRequiredToastHeading: "Approval Required1",
+        waitingRoomApprovalRequiredToastSubHeading: (username) =>
+          `${username} is waiting for approval to join the call1`,
+        waitingRoomApprovalRequiredPrimaryBtnText: "Admit1",
+        waitingRoomApprovalRequiredSecondaryBtnText: "Deny1",
 
         //people panel confirmation popover
         muteAllConfirmationPopoverContent: (type: I18nMuteType) =>
@@ -522,6 +559,8 @@ const userCustomization = customize({
         //chat sub tab labels
         chatPanelGroupTabText: "Group1",
         chatPanelPrivateTabText: "Private1",
+        chatPanelUserOfflineText: "User is offline1",
+        chatPanelUnreadMessageText: "Unread message1",
 
         //chat container placeholder content
         groupChatWelcomeContent: (noMessage) =>
@@ -622,6 +661,22 @@ const userCustomization = customize({
 
         videoRoomUserFallbackText: "User1",
 
+        videoRoomRecordingText: "Recording1",
+        videoRoomGoToActiveSpeakerText: "Go To Active Speaker1",
+        videoRoomScreenshareText: (username) => `${username}'s screenshare1`,
+        videoRoomStartingCallText: "Starting Call. Just a second.1",
+
+        videoRoomScreenshareOverlayText: "You are sharing your screen1",
+        videoRoomScreenshareStopSharingBtnText: "Stop Sharing1",
+        videoRoomScreenShareErrorToastHeading:
+          "Failed to initiate screen sharing1",
+        videoRoomScreenShareErrorToastSubHeading: "Permission denied1",
+
+        videoRoomRecordingToastHeading: (active) =>
+          active ? "Recording Started1" : "Recording Stopped1",
+        videoRoomRecordingToastSubHeading: (name) =>
+          `This room is being recorded by ${name}1`,
+
         //whiteboard label
         whiteboardInitializingText: "Whiteboard is initializing1",
 
@@ -662,6 +717,53 @@ const userCustomization = customize({
         whiteboardFileUploadTypeErrorToastHeading: () => "Unsupported file1",
         whiteboardFileUploadTypeErrorToastSubHeading: () =>
           "Please select file format with pdf, doc, docx, ppt, pptx, png, jpg, jpeg1",
+
+        deviceDetectionToastHeading: (name) => `New ${name} detected1`,
+        deviceDetectionToastSubHeading: ({ name, label }) =>
+          `New ${name} named ${label} detected. Do you want to switch?1`,
+        deviceDetectionPrimaryBtnText: "SWITCH DEVICE1",
+        deviceDetectionCancelBtnText: "IGNORE1",
+        deviceDetectionCheckboxText: "Remember my choice1",
+
+        hostMutedUserToastHeading: (type) =>
+          type === "audio"
+            ? "The host has muted your audio.1"
+            : "The host has muted your video.1",
+        hostRequestedUserToastHeading: (type) =>
+          type === "audio"
+            ? "The host has requested you to speak1"
+            : "The host has asked you to start your video.1",
+        hostRequestedUserToastPrimaryBtnText: () => "UNMUTE1",
+        hostRequestedUserToastSecondaryBtnText: () => "LATER1",
+        hostRemovedUserToastHeading: "The host has removed you from the room.1",
+
+        //common labels
+        cancelText: "CANCEL",
+        loadingText: "Loading...",
+        //common labels
+
+        //auth/login related labels
+
+        //logout confirmation popup
+        logoutText: "Logout1",
+        authLogoutPopupHeading: "Logout?1",
+        authLogoutPopupSubHeading: "Are you sure you wanna log out?1",
+        authLogoutPopupPrimaryBtnText: "CONFIRM1",
+
+        //native popup to require authentication if login enabled
+        authLogInRequiredPopupHeading: "Login Required1",
+        authLogInRequiredPopupSubHeading:
+          "Log-in to your organization to contiue1",
+        authLogInRequiredPopupPrimaryBtnText: "LOGIN1",
+        authLogInRequiredPopupSecondaryBtnText: "CLOSE APP1",
+
+        //auth login error toast
+        authSessionTimeoutToastHeading:
+          "Your session has timed out, Retrying...1",
+        authErrorOnLoginToastHeading:
+          "Error occured on Login, Please login again.1",
+        authAuthenticationFailedText: "Authentication failed1",
+        authAuthorizingApplicationText: "Authorizing app...1",
       },
     },
   ],
