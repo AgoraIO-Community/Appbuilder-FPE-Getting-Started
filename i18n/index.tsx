@@ -38,10 +38,10 @@ const userCustomization = customize({
         createRoomAllowPhoneNumberJoiningTooltipText:
           "Attendees can dial a number and join via PSTN1",
 
-        //create screen action button
+        //create screen action button - Primary Button text
         createRoomBtnText: "Create PARTY!",
 
-        //to navigate join screem
+        //to navigate join screem - Secondary Button text
         createRoomJoinWithID: "Join with a Party ID",
 
         //create success toast heading
@@ -103,13 +103,13 @@ const userCustomization = customize({
         shareRoomPSTNSubText:
           "Share this phone number and pin to dial from phone.1",
 
-        //tooltip
+        //tooltip text when user clicks copy icon button
         shareRoomCopyBtnTooltipText: "Copied to clipboard1",
 
-        //copy invite button
+        //copy invite button - secondary button text
         shareRoomCopyBtnText: "Copy invite to clipboard1",
 
-        //action button
+        //action button - primary button text
         shareRoomStartBtnText: "Start Party!",
 
         //copy meeting links into clipboard
@@ -176,7 +176,10 @@ const userCustomization = customize({
 
         //precall card
         precallYouAreJoiningAsHeading: "You Are Joining as1",
+        //precall input place holder text
         precallNameInputPlaceholderText: "Enter Your Name1",
+
+        //precall primary button
         precallJoinBtnText: ({ waitingRoom, ready, role }) => {
           if (waitingRoom) {
             return ready ? "Ask To Join1" : `Waiting for approval...1`;
@@ -192,7 +195,7 @@ const userCustomization = customize({
         },
         //precall card
 
-        //settings panel
+        //settings panel labels for both precall and videocall screen
 
         settingsPanelHeading: "SettingsPanelHeader",
 
@@ -231,12 +234,14 @@ const userCustomization = customize({
 
         //settings panel
 
-        //vb panel
+        //vb panel labels for both precall and video call screen
         vbPanelHeading: "Virtual Background1",
+        //vb panel Info text when camera is on/off while using VB panel
         vbPanelInfo: (isCamOn: boolean) =>
           isCamOn
             ? "Camera is currently off. Selected background will be applied as soon as your camera turns on.1"
             : "Your camera is switched off. Save a background to apply once it’s turned on.1",
+        //vb panel option text
         vbPanelOptionNoneText: "None1",
         vbPanelOptionBlurText: "Blur1",
         vbPanelOptionCustomText: "Custom1",
@@ -271,6 +276,8 @@ const userCustomization = customize({
         toolbarItemInviteText: "Invite1",
 
         //center toolbar items
+
+        //mic button text
         toolbarItemMicrophoneText: (deviceStatus) => {
           switch (deviceStatus) {
             case I18nDeviceStatus.ON:
@@ -283,6 +290,7 @@ const userCustomization = customize({
               return "Mic1";
           }
         },
+        //mic button tooltip text
         toolbarItemMicrophoneTooltipText: (deviceStatus) => {
           switch (deviceStatus) {
             case I18nDeviceStatus.ON:
@@ -295,6 +303,7 @@ const userCustomization = customize({
               return "Mic1";
           }
         },
+        //camera button text
         toolbarItemCameraText: (deviceStatus) => {
           switch (deviceStatus) {
             case I18nDeviceStatus.ON:
@@ -307,6 +316,7 @@ const userCustomization = customize({
               return "Video1";
           }
         },
+        //camera button tooltip text
         toolbarItemCameraTooltipText: (deviceStatus) => {
           switch (deviceStatus) {
             case I18nDeviceStatus.ON:
@@ -319,10 +329,14 @@ const userCustomization = customize({
               return "Video1";
           }
         },
+        //share button text
         toolbarItemShareText: (active) => (active ? "Stop Share1" : "Share1"),
+        //recording button text
         toolbarItemRecordingText: (active) =>
           active ? "Stop Rec1" : "Record1",
+        //leave button text
         toolbarItemLeaveText: "Leave1",
+        //more button text
         toolbarItemMoreText: "More1",
 
         //more button items
@@ -343,6 +357,7 @@ const userCustomization = customize({
         toolbarItemChatText: "Chat1",
         toolbarItemSettingText: "Settings1",
 
+        //livestreaming attendee tooltip text for mic/camera/screenshare
         livestreamingMicrophoneTooltipText: (isHandRaised) =>
           isHandRaised
             ? "Waiting for host to appove the request1"
@@ -363,11 +378,13 @@ const userCustomization = customize({
         //invite title label - if only one user on the call
         inviteTileWelcomeText: "Welcome1",
         inviteTileNoElseJoinedYetText: "No one else has joined yet.1",
+        //invite tile primary button text
         inviteTileCopyInviteBtnText: "COPY INVITATION1",
         //invite title label - if only one user on the call
 
         //invite popup
         invitePopupHeading: "Invite others to join this room1",
+        //primary button text
         invitePopupPrimaryBtnText: "COPY INVITATION1",
         //invite popup
 
@@ -482,17 +499,19 @@ const userCustomization = customize({
           "Choose at least one language to proceed1",
         sttChangeSpokenLanguageText: "Change Spoken Language1",
 
-        //transcript related
+        //transcript panel labels
         sttTranscriptPanelHeaderText: "Meeting Transcript1",
         sttDownloadBtnText: "Download1",
         sttDownloadTranscriptBtnText: "Download Transcript1",
         sttSettingSpokenLanguageText: "Setting Spoken Language1",
         sttLanguageChangeInProgress: "Language Change is in progress...1",
 
+        //transcript panel search related labels
         sttTranscriptPanelSearchText: "Search1",
         sttTranscriptPanelNoSearchResultsFoundText: "No search results found1",
         sttTranscriptPanelViewLatestText: "View Latest1",
 
+        //toast heading/subheading for when user change spoken language
         sttSpokenLanguageToastHeading: (action) => `Spoken Language ${action}1`,
         sttSpokenLanguageToastSubHeading: ({
           action,
@@ -521,16 +540,23 @@ const userCustomization = customize({
         peoplePanelWantToJoinText: "WANT TO JOIN1",
         peoplePanelWaitingText: "WAITING1",
 
+        //people panel participant labels
         peoplePanelMeText: "Me1",
         peoplePanelPresenterText: "Presenter1",
 
+        //people panel waiting room button text
         peoplePanelWaitingRoomRequestApprovalBtnTxt: "Admit1",
         peoplePanelWaitingRoomRequestDenyBtnTxt: "Deny1",
         peoplePanelUserNotFoundLabel: "User not found1",
+
+        //peope panel livestreaming labels
         peoplePanelStreamingRequestSectionHeader: "STREAMING REQUEST1",
+
+        //people panel livestreaming room button text
         peoplePanelLivestreamingApprovalBtnText: "Accept1",
         peoplePanelLivestreamingDenyBtnText: "Deny1",
 
+        //people panel waiting approval toast button text
         waitingRoomApprovalRequiredToastHeading: "Approval Required1",
         waitingRoomApprovalRequiredToastSubHeading: (username) =>
           `${username} is waiting for approval to join the call1`,
@@ -538,8 +564,10 @@ const userCustomization = customize({
         waitingRoomApprovalRequiredSecondaryBtnText: "Deny1",
 
         //people panel confirmation popover
+        // to mute everyone on the call
         muteAllConfirmationPopoverContent: (type: I18nMuteType) =>
           `Mute everyone's ${type} on the call?1`,
+        // to request user video/audio
         requestConfirmationPopoverContent: ({
           name,
           type,
@@ -547,6 +575,7 @@ const userCustomization = customize({
           `Request ${name} to turn on their ${
             type === I18nMuteType.audio ? "microphone1" : "camera1"
           }?`,
+        // to mute particular user video/audio
         muteConfirmationPopoverContent: ({ name, type }) =>
           `Mute ${name}'s ${type} for everyone on the call? Only ${name} can unmute themselves.1`,
 
@@ -559,7 +588,11 @@ const userCustomization = customize({
         //chat sub tab labels
         chatPanelGroupTabText: "Group1",
         chatPanelPrivateTabText: "Private1",
+
+        //chat container info text when user goes offline
         chatPanelUserOfflineText: "User is offline1",
+
+        //chat container unread message text
         chatPanelUnreadMessageText: "Unread message1",
 
         //chat container placeholder content
@@ -575,23 +608,23 @@ const userCustomization = customize({
 
         //chat toast notification
 
-        //single user public chat
+        //Toast heading - when single user sends message in public chat
         publicChatToastHeading: (name: string) =>
           `${name} commented in the public chat1`,
 
-        //multiple user public chat
+        //Toast - multiple users sends message  public chat
         multiplePublicChatToastHeading: "New comments in Public Chat1",
         multiplePublicChatToastSubHeading: ({ count, from }) =>
           `You have ${count} new messages from ${from}1`,
 
-        //private chat
+        //Toast - when single user sends message private chat
         privateChatToastHeading: "You’ve received a private message1",
 
-        //single private chat message
+        //Toast - when single user sends multiple message in private chat
         multiplePrivateChatToastHeading: ({ count }) =>
           `You’ve received ${count} private messages1`,
 
-        //multiple private chat and public chat message
+        //Toast - when users send messages on both public and private message
         multiplePublicAndPrivateChatToastHeading:
           "New comments in Public & Private Chat1",
         multiplePublicAndPrivateChatToastSubHeading: ({
@@ -602,7 +635,7 @@ const userCustomization = customize({
           `You have ${publicChatCount} new messages from ${from} and ${privateChatCount} Private chat1`,
 
         //livestreaming attendee info tile
-        //it will shown to livestreaming attendee when host is not joined.
+        //it will be shown to livestreaming attendee when host is not joined.
         livestreamingAttendeeWhatYouCanDoText: "Here's what you can do here :1",
         livestreamingAttendeeInviteOthersText: "INVITE OTHER ATTENDEES1",
         livestreamingAttendeeWaitingForHostToJoinText:
@@ -625,55 +658,78 @@ const userCustomization = customize({
 
         //livestreaming notification and buttons labels
 
+        //toast when user raised the request
+        //it will be displayed in the user side
         livestreamRaiseHandRequestToastHeading: "You’ve raised your hand.1",
         livestreamRaiseHandRequestToastSubHeading:
           "Waiting for host to approve the request1",
 
+        //toast when user request received in the host side
+        //it will be displayed in the host side
         livestreamRaiseHandRequestReceivedToastHeading: (name) =>
           `${name} has raised their hand to be a Presenter1`,
         livestreamRaiseHandRequestReceivedToastSubHeading:
           "Once approved they will be able to speak, share their video and present during this call.1",
 
+        //toast when host approve the user request
+        //it will be displayed in the user side
         livestreamRaiseHandRequestAcceptedToastHeading:
           "Host has approved your request.1",
         livestreamRaiseHandRequestAcceptedToastSubHeading:
           "You are now a Presenter1",
 
+        //toast when user request rejected by host
+        //it will be displayed in the user side
         livestreamRaiseHandRequestRejectedToastHeading:
           "Your request was rejected by the host1",
 
+        //toast when user withdraw the raise hand request
+        //it will be displayed on the host side
         livestreamRaiseHandRequestRecallToastHeading: (name) =>
           `${name} has lowered their hand1`,
 
+        //toast when user withdraw the raise hand request
+        //it will be displayed on the user side
         livestreamRaiseHandRequestRecallLocalToastHeading:
           "You’ve lowered your hand.1",
 
+        //toast when host revoked the user permission
         livestreamRaiseHandApprovedRequestRecallToastHeading:
           "Host has revoked streaming permissions.1",
 
+        //toast when host promote user to co-host
         livestreamPromoteAsCoHostToastHeading:
           "Host promoted you as a Presenter1",
+
+        //toast when request already processed
         livestreamRequestAlreadyProcessed: "Request already processed.1",
 
-        //livestreaming toast action button
+        //livestreaming approval toast action button
         livestreamToastApprovalBtnText: "ALLOW TO BE A PRESENTER1",
         livestreamToastDenyBtnText: "DENY1",
 
         videoRoomUserFallbackText: "User1",
 
+        //top toolbar recordin text
         videoRoomRecordingText: "Recording1",
+        //active speaker text used in the sidebar layout
         videoRoomGoToActiveSpeakerText: "Go To Active Speaker1",
-        videoRoomScreenshareText: (username) => `${username}'s screenshare1`,
         videoRoomStartingCallText: "Starting Call. Just a second.1",
 
+        //screenshare text used in the video tile
+        videoRoomScreenshareText: (username) => `${username}'s screenshare1`,
         videoRoomScreenshareOverlayText: "You are sharing your screen1",
         videoRoomScreenshareStopSharingBtnText: "Stop Sharing1",
+
+        //toast for screenshare permission denied error
         videoRoomScreenShareErrorToastHeading:
           "Failed to initiate screen sharing1",
         videoRoomScreenShareErrorToastSubHeading: "Permission denied1",
 
+        //toast for recording start/stop status
         videoRoomRecordingToastHeading: (active) =>
           active ? "Recording Started1" : "Recording Stopped1",
+        //subtext only applicable for start action
         videoRoomRecordingToastSubHeading: (name) =>
           `This room is being recorded by ${name}1`,
 
@@ -718,6 +774,7 @@ const userCustomization = customize({
         whiteboardFileUploadTypeErrorToastSubHeading: () =>
           "Please select file format with pdf, doc, docx, ppt, pptx, png, jpg, jpeg1",
 
+        //Toast when user connect a new device into the system
         deviceDetectionToastHeading: (name) => `New ${name} detected1`,
         deviceDetectionToastSubHeading: ({ name, label }) =>
           `New ${name} named ${label} detected. Do you want to switch?1`,
@@ -725,16 +782,19 @@ const userCustomization = customize({
         deviceDetectionCancelBtnText: "IGNORE1",
         deviceDetectionCheckboxText: "Remember my choice1",
 
+        //Toast when host mute user's video/audio in the call
         hostMutedUserToastHeading: (type) =>
           type === "audio"
             ? "The host has muted your audio.1"
             : "The host has muted your video.1",
+        //Toast when host request user's video/audio in the call
         hostRequestedUserToastHeading: (type) =>
           type === "audio"
             ? "The host has requested you to speak1"
             : "The host has asked you to start your video.1",
         hostRequestedUserToastPrimaryBtnText: () => "UNMUTE1",
         hostRequestedUserToastSecondaryBtnText: () => "LATER1",
+        //Toast when host removed the user from the call
         hostRemovedUserToastHeading: "The host has removed you from the room.1",
 
         //common labels
