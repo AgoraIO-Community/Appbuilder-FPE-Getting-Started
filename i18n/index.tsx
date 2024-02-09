@@ -341,7 +341,7 @@ const userCustomization = customize({
 
         //more button items
         toolbarItemNoiseCancellationText: "Noise Cancellation1",
-        toolbarItemVitrualBackgroundText: "Virtual Background1",
+        toolbarItemVirtualBackgroundText: "Virtual Background1",
         toolbarItemWhiteboardText: (active) =>
           active ? "Hide Whiteboard1" : "Show Whiteboard1",
         toolbarItemCaptionText: (active) =>
@@ -556,12 +556,18 @@ const userCustomization = customize({
         peoplePanelLivestreamingApprovalBtnText: "Accept1",
         peoplePanelLivestreamingDenyBtnText: "Deny1",
 
-        //people panel waiting approval toast button text
+        //people panel waiting room approval request toast
+        //it will be shown to host
         waitingRoomApprovalRequiredToastHeading: "Approval Required1",
         waitingRoomApprovalRequiredToastSubHeading: (username) =>
           `${username} is waiting for approval to join the call1`,
         waitingRoomApprovalRequiredPrimaryBtnText: "Admit1",
         waitingRoomApprovalRequiredSecondaryBtnText: "Deny1",
+
+        //people panel waiting room approval rejection toast b
+        waitingRoomApprovalRejectionToastHeading: "Approval Required1",
+        waitingRoomApprovalRejectionToastSubHeading:
+          "Permission to enter the meeting was denied by the host1",
 
         //people panel confirmation popover
         // to mute everyone on the call
@@ -732,6 +738,10 @@ const userCustomization = customize({
         //subtext only applicable for start action
         videoRoomRecordingToastSubHeading: (name) =>
           `This room is being recorded by ${name}1`,
+
+        //topbar people count onhover tooltip text
+        videoRoomPeopleCountTooltipHostText: "Host1",
+        videoRoomPeopleCountTooltipAttendeeText: "Audience1",
 
         //whiteboard label
         whiteboardInitializingText: "Whiteboard is initializing1",
