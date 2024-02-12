@@ -468,10 +468,10 @@ const userCustomization = customize({
         leaveRoomPopupPrimaryBtnText: "LEAVE1",
 
         //remove user popup - confirmation popup to remove the user from the call
-        removeFromRoomPopupHeading: (name) => `Remove ${name}?1`,
-        removeFromRoomPopupSubHeading: (name) =>
+        removeUserFromRoomPopupHeading: (name) => `Remove ${name}?1`,
+        removeUserFromRoomPopupSubHeading: (name) =>
           `Once removed, ${name} will still be able to rejoin the room later.1`,
-        removeFromRoomPopupPrimaryBtnText: "REMOVE1",
+        removeUserFromRoomPopupPrimaryBtnText: "REMOVE1",
 
         //toast to inform user once that host removed you from the call
         userRemovedFromTheRoomToastHeading: (name) =>
@@ -789,7 +789,7 @@ const userCustomization = customize({
         deviceDetectionToastSubHeading: ({ name, label }) =>
           `New ${name} named ${label} detected. Do you want to switch?1`,
         deviceDetectionPrimaryBtnText: "SWITCH DEVICE1",
-        deviceDetectionCancelBtnText: "IGNORE1",
+        deviceDetectionSecondaryBtnText: "IGNORE1",
         deviceDetectionCheckboxText: "Remember my choice1",
 
         //Toast when host mute user's video/audio in the call
