@@ -5,12 +5,12 @@ import {
   useDisableButton,
   MUTE_REMOTE_TYPE,
   TertiaryButton,
-} from 'customization-api';
-import React, {useState} from 'react';
+} from "customization-api";
+import React, { useState } from "react";
 
 const DisableUnmuteButton = () => {
   const {
-    data: {isHost},
+    data: { isHost },
   } = useRoomInfo();
   const disableButton = useDisableButton();
 
@@ -24,13 +24,13 @@ const DisableUnmuteButton = () => {
       <TertiaryButton
         containerStyle={style.containerStyle}
         textStyle={style.textStyle as any}
-        text={micDisabled ? 'Enable Attendee Mic' : 'Disable Attendee Mic'}
+        text={micDisabled ? "Enable Attendee Mic" : "Disable Attendee Mic"}
         onPress={() => {
           if (!micDisabled) {
-            disableButton(MUTE_REMOTE_TYPE.video, true);
+            disableButton(MUTE_REMOTE_TYPE.audio, true);
             setMicDisabled(true);
           } else {
-            disableButton(MUTE_REMOTE_TYPE.video, false);
+            disableButton(MUTE_REMOTE_TYPE.audio, false);
             setMicDisabled(false);
           }
         }}
@@ -47,8 +47,8 @@ const BottomToolBarOverride = () => {
         {
           component: DisableUnmuteButton,
           order: 0,
-          align: 'end',
-          hide: 'no',
+          align: "end",
+          hide: "no",
         },
       ]}
       snapPointsMinMax={[100, 300]}
@@ -58,16 +58,16 @@ const BottomToolBarOverride = () => {
 
 const style = {
   toolbarItemStyle: {
-    position: 'relative',
+    position: "relative",
   },
   containerStyle: {
     padding: 10,
   },
   textStyle: {
-    fontWeight: '600',
+    fontWeight: "600",
     fontSize: 14,
     lineHeight: 14,
-    color: 'white',
+    color: "white",
   },
 };
 
