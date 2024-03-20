@@ -18,17 +18,7 @@ const config = customize({
   lifecycle: {
     useBeforeEndCall: useBeforeEndCall,
     useAfterEndCall: useAfterEndCall,
-  },
-  i18n: [
-    {
-      label: 'English',
-      locale: 'en-us',
-      data: {
-        leaveRoomPopupSubHeading:
-          'Are you sure you want to leave this meeting and end the call for everyone?',
-      },
-    },
-  ],
+  }
 });
 
 export default config;
