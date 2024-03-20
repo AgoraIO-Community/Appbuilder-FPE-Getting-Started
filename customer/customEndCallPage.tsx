@@ -1,34 +1,40 @@
-import React from 'react';
-import {endCallEveryOne, getCustomRoute, useParams} from 'customization-api';
+import React, {useContext} from 'react';
+import {
+  customEvents,
+  getCustomRoute,
+  useLocalUserInfo,
+} from 'customization-api';
+import {CustomWrapperContext} from './customWrapper';
 
 const CustomEndCallPage = () => {
-  const {by}: {by: string} = useParams();
-
   return (
     <div style={style.containerStyle}>
-      <span style={style.textStyle as any}>
-        {by === 'self'
-          ? 'You have left the meeting'
-          : 'Host ended the meeting for everyone'}
-      </span>
+      <span style={style.textStyle as any}>{'The Meeting has been ended'}</span>
     </div>
   );
 };
 
-const useBeforeEndCall = () => isHost => {
-  if (isHost) {
-    endCallEveryOne();
-  }
-  return null;
+const useBeforeEndCall = () => {
+  const {uid} = useLocalUserInfo();
+  const {triggerEndCallEventRef} = useContext(CustomWrapperContext);
+
+  return isHost => {
+    //checking if user is host
+    if (isHost) {
+      //to prevent multiple host sending the HOST_ENDED_THE_CALL event
+      triggerEndCallEventRef.current &&
+        customEvents.send(
+          'HOST_ENDED_THE_CALL',
+          JSON.stringify({triggeredByUid: uid}),
+        );
+    }
+    return null;
+  };
 };
 
-const useAfterEndCall = () => (isHost, history, isTriggeredByHost) => {
-  if (isHost) {
-    history.push('/');
-  } else {
-    history.push(
-      getCustomRoute(isTriggeredByHost ? 'call-ended/host' : 'call-ended/self'),
-    );
+const useAfterEndCall = () => (isHost, history) => {
+  if (!isHost) {
+    history.push(getCustomRoute('call-ended'));
   }
   return null;
 };
