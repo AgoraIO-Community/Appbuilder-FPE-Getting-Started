@@ -6,6 +6,9 @@ import {
 } from 'customization-api';
 import {CustomWrapperContext} from './customWrapper';
 
+/**
+ * Custom Page for attendee after call ended
+ */
 const CustomEndCallPage = () => {
   return (
     <div style={style.containerStyle}>
@@ -14,6 +17,7 @@ const CustomEndCallPage = () => {
   );
 };
 
+//hook that return function (this function will be executed by the system before end call)
 const useBeforeEndCall = () => {
   const {uid} = useLocalUserInfo();
   const {triggerEndCallEventRef} = useContext(CustomWrapperContext);
@@ -32,8 +36,10 @@ const useBeforeEndCall = () => {
   };
 };
 
+//hook that return function (this function will be executed by the system after end call)
 const useAfterEndCall = () => (isHost, history) => {
   if (!isHost) {
+    //for attendee user will need to redirect to custom page
     history.push(getCustomRoute('call-ended'));
   }
   return null;

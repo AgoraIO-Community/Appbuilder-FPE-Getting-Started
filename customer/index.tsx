@@ -11,14 +11,23 @@ const config = customize({
   components: {
     videoCall: {
       bottomToolBar: BottomToolBarOverride,
+      //added wrapper to pass/share data state in between customization components
       wrapper: CustomWrapperProvider,
     },
   },
+  /**
+   * custom route
+   * we can use this custom route functionality to redirect the attendee after host end the meeting
+   */
   customRoutes: [{component: CustomEndCallPage, path: 'call-ended'}],
+  /**
+   * lifecyle
+   * used to register customhook which will executed by the system on before/after end call
+   */
   lifecycle: {
     useBeforeEndCall: useBeforeEndCall,
     useAfterEndCall: useAfterEndCall,
-  }
+  },
 });
 
 export default config;
