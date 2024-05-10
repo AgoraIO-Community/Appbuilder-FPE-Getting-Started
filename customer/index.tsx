@@ -12,6 +12,7 @@ const config = customize({
     videoCall: {
       bottomToolBar: BottomToolBarOverride,
       //added wrapper to pass/share data state in between customization components
+      //access to appbuilder hooks and state
       wrapper: CustomWrapperProvider,
     },
   },
