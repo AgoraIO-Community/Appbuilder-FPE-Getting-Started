@@ -9,7 +9,7 @@
  information visit https://appbuilder.agora.io. 
 *********************************************
 */
-import {customize} from 'customization-api';
+import {customize, useRoomInfo} from 'customization-api';
 import React, {useState} from 'react';
 import {
   Text,
@@ -22,80 +22,96 @@ import {
   ChatBubbleProps,
   ChatBubble,
   useMessages,
-  useChatUIControl,
+  useChatUIControls,
   useLocalUid,
   $config,
+  SDKChatType,
 } from 'customization-api';
-import * as leoProfanity from 'leo-profanity';
 
-const CustomChatBubble = (props: ChatBubbleProps) => {
+export const CustomChatBubble = (props: ChatBubbleProps) => {
   const [editActive, setEditActive] = useState(false);
-  const {editMessage, deleteMessage} = useMessages();
+  const {deleteMessage, removeMessageFromPrivateStore, removeMessageFromStore} =
+    useMessages();
   const localUid = useLocalUid();
-  const {privateActive, selectedChatUserId} = useChatUIControl();
   const [editMsgLocal, setEditMsgLocal] = useState('');
-  if (editActive) {
-    return (
-      <View style={styles.container}>
-        <TextInput
-          style={styles.textInputStyle}
-          placeholder={'Edit message'}
-          onChangeText={(txt) => setEditMsgLocal(txt)}
-        />
-        <View style={styles.btnContainer}>
-          <TouchableOpacity
-            onPress={() => {
-              //do edit
-              editMessage(
-                props.msgId,
-                editMsgLocal,
-                privateActive ? selectedChatUserId : undefined,
-              );
-              setEditActive(false);
-            }}>
-            <Text>Submit</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{marginHorizontal: 10}}
-            onPress={() => {
-              setEditActive(false);
-            }}>
-            <Text>Cancel</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+  const {
+    privateChatUser: selectedUserId,
+    message,
+    setMessage,
+  } = useChatUIControls();
+  const {data} = useRoomInfo();
+  debugger;
+  // if (editActive) {
+  //   return (
+  //     <View style={styles.container}>
+  //       <TextInput
+  //         style={styles.textInputStyle}
+  //         placeholder={'Edit message'}
+  //         onChangeText={txt => setEditMsgLocal(txt)}
+  //       />
+  //       <View style={styles.btnContainer}>
+  //         <TouchableOpacity
+  //           onPress={() => {
+  //             //do edit
+  //             // editMessage(
+  //             //   props.msgId,
+  //             //   editMsgLocal,
+  //             //   privateActive ? selectedChatUserId : undefined,
+  //             // );
+  //             setEditActive(false);
+  //           }}>
+  //           <Text>Submit</Text>
+  //         </TouchableOpacity>
+  //         <TouchableOpacity
+  //           style={{marginHorizontal: 10}}
+  //           onPress={() => {
+  //             setEditActive(false);
+  //           }}>
+  //           <Text>Cancel</Text>
+  //         </TouchableOpacity>
+  //       </View>
+  //     </View>
+  //   );
+  // }
+
+  const handleDelete = () => {
+    const chatType = selectedUserId
+      ? SDKChatType.SINGLE_CHAT
+      : SDKChatType.GROUP_CHAT;
+    deleteMessage(
+      props.msgId,
+      selectedUserId ? selectedUserId.toString() : data.chat.group_id,
+      chatType,
     );
-  }
+    if (chatType === SDKChatType.SINGLE_CHAT) {
+      removeMessageFromPrivateStore(props.msgId, props.isLocal);
+    }
+    if (chatType === SDKChatType.GROUP_CHAT) {
+      removeMessageFromStore(props.msgId, props.isLocal);
+    }
+  };
   return (
     <View style={styles.container}>
       <ChatBubble
         {...props}
-        message={
-          props.isDeleted
-            ? 'This message was deleted'
-            : leoProfanity.clean(props.message)
-        }
+        message={props.isDeleted ? 'This message was deleted' : props.message}
       />
+      {/* local user has access to delete */}
       {props.uid === localUid && (
         <View style={styles.btnContainer}>
           {!props?.isDeleted && (
             <>
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 onPress={() => {
                   setEditActive(true);
                 }}>
                 <Text>Edit</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
 
               <TouchableOpacity
                 style={{marginHorizontal: 10}}
-                onPress={() => {
-                  deleteMessage(
-                    props.msgId,
-                    privateActive ? selectedChatUserId : undefined,
-                  );
-                }}>
-                <Text style={{color: 'red'}}>Delete</Text>
+                onPress={handleDelete}>
+                <Text style={{color: 'red'}}>DEL</Text>
               </TouchableOpacity>
             </>
           )}
@@ -107,8 +123,9 @@ const CustomChatBubble = (props: ChatBubbleProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    borderColor: '#90EE90',
-    borderWidth: 5,
+    borderColor: '#5DADE2',
+    borderWidth: 2,
+    borderStyle: 'dotted',
   },
   textInputStyle: {
     marginHorizontal: 10,
@@ -118,7 +135,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 2,
     paddingHorizontal: 10,
-    borderColor: $config.PRIMARY_COLOR,
+    borderColor: $config.PRIMARY_ACTION_BRAND_COLOR,
   },
   btnContainer: {
     flexDirection: 'row',
