@@ -22,8 +22,8 @@ import image1 from './assets/sunset.jpg';
 import image2 from './assets/garden.jpg';
 
 const VBItem = ({type, path, label}) => {
-  const {saveVBOption, isVBOptionSelected} = useVirtualBackground();
-  const isSelectedItem = isVBOptionSelected(type, path);
+  const {setVBPreview, isVirtualBackgroundSelected} = useVirtualBackground();
+  const isSelectedItem = isVirtualBackgroundSelected(type, path);
 
   let comp = null;
   switch (type) {
@@ -38,7 +38,7 @@ const VBItem = ({type, path, label}) => {
 
   return (
     <TouchableOpacity
-      onPress={() => saveVBOption(type, path)}
+      onPress={() => setVBPreview(type, path)}
       style={[styles.vbItem, isSelectedItem && styles.selectedItem]}>
       {comp}
     </TouchableOpacity>
@@ -46,19 +46,19 @@ const VBItem = ({type, path, label}) => {
 };
 
 function VBPanel({isOnPrecall = false}) {
-  const {vbOptions, setVBOptions, applyVBOption, closeVBPanel} =
-    useVirtualBackground();
-  const [isUpdated, setIsUpdated] = React.useState(false);
+    const {
+      virtualBackgrounds,
+      applyVirtualBackground,
+      hideVirtualBackgroundPanel,
+    } = useVirtualBackground();
+  
 
   const localUid = useLocalUid();
   const isVideoEnabled = useIsVideoEnabled();
 
-
-  if (!isUpdated) return null;
-
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.header} onPress={closeVBPanel}>
+      <TouchableOpacity style={styles.header} onPress={hideVirtualBackgroundPanel}>
         <Text style={styles.headerText}>My VB Panel</Text>
       </TouchableOpacity>
       {!isOnPrecall && (
@@ -68,7 +68,7 @@ function VBPanel({isOnPrecall = false}) {
         </View>
       )}
       <ScrollView contentContainerStyle={styles.body}>
-        {vbOptions
+        {virtualBackgrounds
           .filter(item => item.type !== 'custom')
           .map(item => (
             <VBItem
@@ -81,7 +81,7 @@ function VBPanel({isOnPrecall = false}) {
       </ScrollView>
       {!isOnPrecall && (
         <View style={styles.footer}>
-          <TouchableOpacity onPress={applyVBOption}>
+          <TouchableOpacity onPress={applyVirtualBackground}>
             <Text>Apply</Text>
           </TouchableOpacity>
         </View>

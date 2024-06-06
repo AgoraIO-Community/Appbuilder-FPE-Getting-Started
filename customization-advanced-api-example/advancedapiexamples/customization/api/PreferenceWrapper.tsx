@@ -8,12 +8,12 @@ interface PreferenceWrapperProviderProps {
   children: React.ReactNode;
 }
 const PreferenceWrapperProvider = (props: PreferenceWrapperProviderProps) => {
-  const { vbOptions, setVBOptions } = useVirtualBackground();
+  const {virtualBackgrounds, addVirtualBackgrounds} = useVirtualBackground();
 
   React.useEffect(() => {
     const update = async () => {
       const options = [
-        ...vbOptions,
+        ...virtualBackgrounds,
 
         {
           type: "image",
@@ -37,7 +37,7 @@ const PreferenceWrapperProvider = (props: PreferenceWrapperProviderProps) => {
           id: "VB-238",
         },
       ] as Option[];
-      await setVBOptions(options);
+      await addVirtualBackgrounds(options);
     };
     update();
   }, []);
