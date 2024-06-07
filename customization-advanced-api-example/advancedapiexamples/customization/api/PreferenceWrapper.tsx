@@ -1,5 +1,5 @@
 import React from "react";
-import { useVirtualBackground, type Option } from "customization-api";
+import { useVirtualBackground, type VBOption } from "customization-api";
 
 
 const PreferenceWrapperContext = React.createContext({});

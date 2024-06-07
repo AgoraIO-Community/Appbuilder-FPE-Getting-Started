@@ -11,15 +11,12 @@ import {
   useVirtualBackground,
   useIsVideoEnabled,
   useLocalUid,
-  type Option,
+  type VBOption,
   isMobileOrTablet,
   VBPreview,
 } from 'customization-api';
 
-//@ts-ignore
-import image1 from './assets/sunset.jpg';
-//@ts-ignore
-import image2 from './assets/garden.jpg';
+
 
 const VBItem = ({type, path, label}) => {
   const {setVBPreview, isVirtualBackgroundSelected} = useVirtualBackground();
