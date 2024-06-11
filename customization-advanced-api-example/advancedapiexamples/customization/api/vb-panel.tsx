@@ -17,7 +17,6 @@ import {
 } from 'customization-api';
 
 
-
 const VBItem = ({type, path, label}) => {
   const {setVBPreview, isVirtualBackgroundSelected} = useVirtualBackground();
   const isSelectedItem = isVirtualBackgroundSelected(type, path);
