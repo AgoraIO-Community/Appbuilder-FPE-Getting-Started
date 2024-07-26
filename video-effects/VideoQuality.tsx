@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useVideoQuality, $config } from "customization-api";
+import {
+  useVideoQuality,
+  $config,
+  ScreenEncoderConfigurationPreset,
+  VideoEncoderConfigurationPreset,
+} from "customization-api";
 
 const MinimizeIcon = () => (
   <svg
@@ -62,9 +67,11 @@ function VideoQuality() {
             <label style={styles.label}>
               Video Quality:
               <select
-                value={currentVideoQuality as VideoProfilePreset}
+                value={currentVideoQuality as VideoEncoderConfigurationPreset}
                 onChange={(e) =>
-                  setVideoQuality(e.target.value as VideoProfilePreset)
+                  setVideoQuality(
+                    e.target.value as VideoEncoderConfigurationPreset
+                  )
                 }
                 style={styles.dropdown}
               >
@@ -81,10 +88,12 @@ function VideoQuality() {
             <label style={styles.label}>
               Screen Share Quality:
               <select
-                value={currentScreenShareQuality as ScreenShareProfilePreset}
+                value={
+                  currentScreenShareQuality as ScreenEncoderConfigurationPreset
+                }
                 onChange={(e) =>
                   setScreenShareQuality(
-                    e.target.value as ScreenShareProfilePreset
+                    e.target.value as ScreenEncoderConfigurationPreset
                   )
                 }
                 style={styles.dropdown}
