@@ -1,6 +1,6 @@
-import {customize, isMobileUA} from 'customization-api';
-import Topbar from './topbar';
-import Bottombar from './bottombar';
+import { customize, isMobileUA } from "customization-api";
+import Topbar from "./topbar";
+import Bottombar from "./bottombar";
 
 const config = customize({
   components: {
