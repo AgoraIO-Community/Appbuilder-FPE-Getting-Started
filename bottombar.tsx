@@ -1,5 +1,5 @@
-import {ToolbarPreset, ToolbarComponents} from 'customization-api';
-import React from 'react';
+import { ToolbarPreset, ToolbarComponents } from "customization-api";
+import React from "react";
 
 const Bottombar = () => {
   const {
@@ -20,12 +20,12 @@ const Bottombar = () => {
             hide: true,
           },
           recording: {
-            hide: w => {
+            hide: (w) => {
               return w <= 767 ? true : false;
             },
           },
           screenshare: {
-            hide: w => {
+            hide: (w) => {
               return w <= 767 ? true : false;
             },
           },
@@ -38,71 +38,71 @@ const Bottombar = () => {
                 hide: false,
               },
               invite: {
-                hide: w => {
-                  return w >= 992 ? true : false;
+                hide: (w) => {
+                  return w > 992 ? true : false;
                 },
               },
               chat: {
-                hide: w => {
+                hide: (w) => {
                   return w > 767 ? true : false;
                 },
               },
               participant: {
-                hide: w => {
+                hide: (w) => {
                   return w > 767 ? true : false;
                 },
               },
               recording: {
-                hide: w => {
+                hide: (w) => {
                   return w > 767 ? true : false;
                 },
               },
               screenshare: {
-                hide: w => {
+                hide: (w) => {
                   return w > 767 ? true : false;
                 },
               },
             },
           },
-          'meeting-title': {
-            align: 'start',
+          "meeting-title": {
+            align: "start",
             component: MeetingTitleToolbarItem,
             order: 0,
           },
-          'participant-count': {
-            align: 'start',
+          "participant-count": {
+            align: "start",
             component: ParticipantCountToolbarItem,
             order: 1,
-            hide: w => {
+            hide: (w) => {
               return w <= 992 ? true : false;
             },
           },
-          'recording-status': {
-            align: 'start',
+          "recording-status": {
+            align: "start",
             component: RecordingStatusToolbarItem,
             order: 2,
           },
           participant: {
-            align: 'end',
+            align: "end",
             component: ParticipantToolbarItem,
             order: 1,
-            hide: w => {
+            hide: (w) => {
               return w <= 767 ? true : false;
             },
           },
           chat: {
-            align: 'end',
+            align: "end",
             component: ChatToolbarItem,
             order: 2,
-            hide: w => {
+            hide: (w) => {
               return w <= 767 ? true : false;
             },
           },
           invite: {
-            align: 'end',
+            align: "end",
             component: InviteToolbarItem,
             order: 3,
-            hide: w => {
+            hide: (w) => {
               return w <= 992 ? true : false;
             },
           },
