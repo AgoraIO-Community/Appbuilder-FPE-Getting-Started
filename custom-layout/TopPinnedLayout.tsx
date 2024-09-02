@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   ScrollView,
   View,
@@ -7,20 +7,15 @@ import {
   Text,
   Pressable,
 } from "react-native";
-import {
-  layoutComponent,
-  useRtc,
-  $config,
-  useContent,
-} from "customization-api";
-import VideoRenderer from "../src/pages/video-call/VideoRenderer";
+import { $config, useContent, VideoRenderer } from "customization-api";
+
 const topPinned = true;
 
-const TopPinnedVideo: layoutComponent = ({ renderData }) => {
+const TopPinnedVideo = ({ renderData }) => {
   const { defaultContent } = useContent();
 
   const [collapse, setCollapse] = useState(false);
-  // Custom Hook *********************
+
   const [dim, setDim] = useState([
     Dimensions.get("window").width,
     Dimensions.get("window").height,

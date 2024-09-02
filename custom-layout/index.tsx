@@ -1,6 +1,6 @@
 import { customize } from "customization-api";
 import TopPinnedVideo from "./TopPinnedLayout";
-import CustomIcon from "./custom-layout.png";
+
 const userCustomization = customize({
   components: {
     videoCall: {
@@ -8,7 +8,7 @@ const userCustomization = customize({
       customLayout: (defaultLayouts) => {
         return defaultLayouts.concat({
           component: TopPinnedVideo,
-          icon: CustomIcon,
+          icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABABAMAAABYR2ztAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAABrYAAAa2AGP9iLXAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAABJQTFRF////AAAAAAAAAAAAAAAAAAAAZJzAmgAAAAV0Uk5TADhWeLi9mUy9AAAAQUlEQVRIS2MIhYJgBgYWGNuBgcEUxmYYVTCqAFmBMRQYMjAwwdgKDAzCMDbDkAAuBAA8HHCBUQWjCkYVjCoY4QoAw0lL0bRtNkoAAAAASUVORK5CYII=",
           label: "Top Pinned",
           name: "top-pinned",
         });
