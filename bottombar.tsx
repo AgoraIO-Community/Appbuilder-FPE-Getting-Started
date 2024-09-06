@@ -1,7 +1,13 @@
-import { ToolbarPreset, ToolbarComponents } from "customization-api";
+import {
+  ToolbarPreset,
+  ToolbarComponents,
+  useSidePanel,
+} from "customization-api";
 import React from "react";
+import { CustomMoreItem, POLL_SIDEBAR_NAME } from "./polling-ui";
 
 const Bottombar = () => {
+  const { setSidePanel } = useSidePanel();
   const {
     MeetingTitleToolbarItem,
     ParticipantCountToolbarItem,
@@ -60,6 +66,15 @@ const Bottombar = () => {
               screenshare: {
                 hide: (w) => {
                   return w > 767 ? true : false;
+                },
+              },
+              poll: {
+                hide: (w) => {
+                  return w > 767 ? true : false;
+                },
+                component: CustomMoreItem,
+                onPress: () => {
+                  setSidePanel(POLL_SIDEBAR_NAME);
                 },
               },
             },
