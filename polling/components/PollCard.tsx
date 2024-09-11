@@ -4,14 +4,15 @@ import {
   PollItem,
   PollItemOptionItem,
   PollStatus,
+  PollTaskRequestTypes,
   usePoll,
 } from '../context/poll-context';
 import {ThemeConfig, TertiaryButton, useLocalUid} from 'customization-api';
 import {PollOptionList, PollOptionListItemResult} from './poll-option-item-ui';
 import {BaseMoreButton} from '../ui/BaseMoreButton';
-import {PollCardMoreActions, PollTaskRequestTypes} from './PollCardMoreActions';
-import {capitalizeFirstLetter, iVoted} from '../helpers';
-import {PollRenderResponseForm} from './form/poll-response-forms';
+import {PollCardMoreActions} from './PollCardMoreActions';
+import {capitalizeFirstLetter, hasUserVoted} from '../helpers';
+import {PollRenderResponseFormBody} from './form/poll-response-forms';
 
 function PollCard({pollItem, isHost}: {pollItem: PollItem; isHost: boolean}) {
   const {sendResponseToPoll, handlePollTaskRequest} = usePoll();
@@ -24,7 +25,7 @@ function PollCard({pollItem, isHost}: {pollItem: PollItem; isHost: boolean}) {
   const resultView =
     isHost ||
     pollItem.status === PollStatus.FINISHED ||
-    iVoted(pollItem.options, localUid);
+    hasUserVoted(pollItem.options, localUid);
 
   return (
     <View style={style.pollItem}>
@@ -76,7 +77,7 @@ function PollCard({pollItem, isHost}: {pollItem: PollItem; isHost: boolean}) {
               </PollOptionList>
             ) : pollItem.status === PollStatus.ACTIVE ? (
               <View style={style.pollResponseFormView}>
-                <PollRenderResponseForm
+                <PollRenderResponseFormBody
                   pollItem={pollItem}
                   onFormComplete={(responses: string | string[]) => {
                     sendResponseToPoll(pollItem, responses);

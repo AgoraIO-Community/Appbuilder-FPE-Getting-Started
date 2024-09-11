@@ -6,16 +6,7 @@ import {
   calculatePosition,
   ThemeConfig,
 } from 'customization-api';
-import {PollStatus} from '../context/poll-context';
-
-export enum PollTaskRequestTypes {
-  PUBLISH = 'PUBLISH',
-  EXPORT = 'EXPORT',
-  FINISH = 'FINISH',
-  VIEW_DETAILS = 'VIEW_DETAILS',
-  DELETE = 'DELETE',
-  SHARE = 'SHARE',
-}
+import {PollStatus, PollTaskRequestTypes} from '../context/poll-context';
 
 interface PollCardMoreActionsMenuProps {
   status: PollStatus;
@@ -36,6 +27,21 @@ const PollCardMoreActions = (props: PollCardMoreActionsMenuProps) => {
   const [modalPosition, setModalPosition] = React.useState({});
   const [isPosCalculated, setIsPosCalculated] = React.useState(false);
   const {width: globalWidth, height: globalHeight} = useWindowDimensions();
+
+  actionMenuitems.push({
+    icon: 'send',
+    iconColor: $config.SECONDARY_ACTION_COLOR,
+    textColor: $config.FONT_COLOR,
+    title: 'Send Poll',
+    titleStyle: {
+      fontSize: ThemeConfig.FontSize.small,
+    },
+    disabled: status !== PollStatus.LATER,
+    onPress: () => {
+      onCardActionSelect(PollTaskRequestTypes.SEND);
+      setActionMenuVisible(false);
+    },
+  });
 
   actionMenuitems.push({
     icon: 'share',
@@ -120,6 +126,7 @@ const PollCardMoreActions = (props: PollCardMoreActionsMenuProps) => {
         },
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actionMenuVisible]);
 
   return (

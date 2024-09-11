@@ -1,4 +1,8 @@
-import {PollAccess, PollItemOptionItem} from './context/poll-context';
+import {Poll, PollAccess, PollItemOptionItem} from './context/poll-context';
+
+function log(...args: any[]) {
+  console.log('[CustomPolling::] ', ...args);
+}
 
 function addVote(
   responses: string[],
@@ -9,7 +13,8 @@ function addVote(
   return options.map((option: PollItemOptionItem) => {
     // Count how many times the value appears in the strings array
     const exists = responses.includes(option.value);
-    if (exists) {
+    const isVoted = option.votes.find(item => item.uid === uid);
+    if (exists && !isVoted) {
       // Creating a new object explicitly
       const newOption: PollItemOptionItem = {
         ...option,
@@ -85,14 +90,34 @@ function capitalizeFirstLetter(string: string): string {
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
 
-function iVoted(options: PollItemOptionItem[], myUid: number): boolean {
-  return options.some(optionItem =>
-    optionItem.votes.some(item => item.uid === myUid),
-  );
+function hasUserVoted(options: PollItemOptionItem[], uid: number): boolean {
+  // Loop through each option and check the votes array
+  return options.some(option => option.votes.some(vote => vote.uid === uid));
+}
+
+function mergePolls(newPoll: Poll, oldPoll: Poll) {
+  // Merge and discard absent properties
+
+  // 1. Start with a copy of the current polls state
+  const mergedPolls: Poll = {...oldPoll};
+  // 2. Add or update polls from newPolls
+  Object.keys(newPoll).forEach(pollId => {
+    mergedPolls[pollId] = newPoll[pollId]; // Add or update each poll from newPolls
+  });
+  // 3. Remove polls that are not in newPolls
+  Object.keys(mergedPolls).forEach(pollId => {
+    if (!(pollId in newPoll)) {
+      delete mergedPolls[pollId]; // Delete polls that are no longer present in newPolls
+    }
+  });
+
+  return mergedPolls;
 }
 
 export {
-  iVoted,
+  log,
+  mergePolls,
+  hasUserVoted,
   downloadCsv,
   arrayToCsv,
   addVote,
