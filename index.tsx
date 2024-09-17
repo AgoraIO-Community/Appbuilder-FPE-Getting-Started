@@ -4,12 +4,20 @@ import {CUSTOM_LAYOUT_NAME, VideoCallWrapper} from './wrapper/VideoCallWrapper';
 import {AppRootWrapper} from './wrapper/AppRootWrapper';
 import {BottomToolbarOverride} from './toolbar/BottomToolbarOverride';
 import {RightToolbarOverride} from './toolbar/RightToolbarOverride';
+import {TopToolbarOverride} from './toolbar/TopToolbarOverride';
+import {PrecallCallWrapper} from './wrapper/PrecallWrapper';
 
 const config = customize({
   components: {
-    //to update name in the store so UI will pick that name
+    //to register event listener -> getting host user uid
     appRoot: AppRootWrapper,
+    //to update name in the store so UI will pick that name
+    precall: {
+      wrapper: PrecallCallWrapper,
+    },
     videoCall: {
+      //to hide the default chat option
+      topToolBar: TopToolbarOverride,
       //placeholder to hold overlay chat
       rightToolBar: RightToolbarOverride,
       //hiding the unnessary controls
