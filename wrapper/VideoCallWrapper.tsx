@@ -20,7 +20,12 @@ export const VideoCallWrapper = props => {
   const {hasUserJoinedRTM} = useChatContext();
   const {setLayout, currentLayout} = useLayout();
   const hideShareTile = useHideShareTitle();
+
   useEffect(() => {
+    if (disableShareTile === false) {
+      hideShareTile(true);
+    }
+
     if (!isJoinDataFetched) {
       return;
     }
@@ -31,9 +36,6 @@ export const VideoCallWrapper = props => {
           uid?.toString(),
           PersistanceLevel.Channel,
         );
-        if (!disableShareTile) {
-          hideShareTile(!disableShareTile);
-        }
       }
     } else {
       if (currentLayout !== CUSTOM_LAYOUT_NAME) {
