@@ -3,7 +3,7 @@ import {
   customEvents,
   useLayout,
   PersistanceLevel,
-  useChatContext,
+  useRtmContext,
   useHideShareTitle,
 } from 'customization-api';
 import {useEffect} from 'react';
@@ -17,7 +17,7 @@ export const VideoCallWrapper = props => {
     isJoinDataFetched,
     roomPreference: {disableShareTile},
   } = useRoomInfo();
-  const {hasUserJoinedRTM} = useChatContext();
+  const {hasUserJoinedRTM} = useRtmContext();
   const {setLayout, currentLayout} = useLayout();
   const hideShareTile = useHideShareTitle();
 
