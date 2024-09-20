@@ -3,26 +3,23 @@ import AttendeeLayout from './layout/AttendeeLayout';
 import {CUSTOM_LAYOUT_NAME, VideoCallWrapper} from './wrapper/VideoCallWrapper';
 import {AppRootWrapper} from './wrapper/AppRootWrapper';
 import {BottomToolbarOverride} from './toolbar/BottomToolbarOverride';
-import {RightToolbarOverride} from './toolbar/RightToolbarOverride';
 import {TopToolbarOverride} from './toolbar/TopToolbarOverride';
-import {PrecallCallWrapper} from './wrapper/PrecallWrapper';
+import {PrecallWrapper} from './wrapper/PrecallWrapper';
 
 const config = customize({
   components: {
-    //to register event listener -> getting host user uid
+    //to register event listener -> get last host user uid
     appRoot: AppRootWrapper,
     //to update name in the store so UI will pick that name
     precall: {
-      wrapper: PrecallCallWrapper,
+      wrapper: PrecallWrapper,
     },
     videoCall: {
       //to hide the default chat option
       topToolBar: TopToolbarOverride,
-      //placeholder to hold overlay chat
-      rightToolBar: RightToolbarOverride,
       //hiding the unnessary controls
       bottomToolBar: BottomToolbarOverride,
-      //to update layout for attendee and hide the share tile for the host
+      //to update layout for attendee and hide the share tile for the host and inject chat overlay
       wrapper: VideoCallWrapper,
       //adding custom layout
       customLayout: defaultLayouts => {

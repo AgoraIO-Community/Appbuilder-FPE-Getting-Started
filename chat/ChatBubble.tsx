@@ -8,8 +8,6 @@ import {
 } from 'customization-api';
 import UploadIndicator from './UploadIndicator';
 
-//@ts-ignore , need to export type messageStoreInterface
-
 function formatTime(date: Date): string {
   let hours = date.getHours();
   let minutes = date.getMinutes();
@@ -21,7 +19,6 @@ function formatTime(date: Date): string {
   return strTime;
 }
 
-//@ts-ignore
 const CustomChatBubble = ({msg}) => {
   const {defaultContent} = useContent();
   const localUid = useLocalUid();
@@ -132,12 +129,10 @@ const styles: {[key: string]: React.CSSProperties} = {
     maxWidth: '200px',
   },
   outgoingMessage: {
-    // backgroundColor: '#DED3D3',
     alignSelf: 'flex-end',
     marginRight: '1rem',
   },
   incomingMessage: {
-    // backgroundColor: '#A9A5A5',
     alignSelf: 'flex-start',
     marginLeft: '1rem',
   },

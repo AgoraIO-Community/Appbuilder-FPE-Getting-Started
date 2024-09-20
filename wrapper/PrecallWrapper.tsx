@@ -1,7 +1,10 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {useUserName} from 'customization-api';
 
-export const PrecallCallWrapper = props => {
+/**
+ *
+ */
+export const PrecallWrapper = props => {
   const [ready, setReady] = useState(false);
   const [_, setName] = useUserName();
 

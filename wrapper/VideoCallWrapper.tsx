@@ -3,10 +3,11 @@ import {
   customEvents,
   useLayout,
   PersistanceLevel,
-  useRtmContext,
+  useRtm,
   useHideShareTitle,
 } from 'customization-api';
-import {useEffect} from 'react';
+import React, {useEffect} from 'react';
+import {ChatOverlayUI} from '../chat/ChatOverlayUI';
 
 export const CUSTOM_EVENT_NAME_FOR_HOST_JOINED = 'custom-event-host-joined';
 export const CUSTOM_LAYOUT_NAME = 'attendee-layout';
@@ -17,17 +18,16 @@ export const VideoCallWrapper = props => {
     isJoinDataFetched,
     roomPreference: {disableShareTile},
   } = useRoomInfo();
-  const {hasUserJoinedRTM} = useRtmContext();
+  const {hasUserJoinedRTM} = useRtm();
   const {setLayout, currentLayout} = useLayout();
   const hideShareTile = useHideShareTitle();
 
   useEffect(() => {
-    if (disableShareTile === false) {
-      hideShareTile(true);
-    }
-
     if (!isJoinDataFetched) {
       return;
+    }
+    if (disableShareTile === false) {
+      hideShareTile(true);
     }
     if (isHost) {
       if (hasUserJoinedRTM) {
@@ -52,5 +52,10 @@ export const VideoCallWrapper = props => {
     disableShareTile,
     hideShareTile,
   ]);
-  return props.children;
+  return (
+    <>
+      <ChatOverlayUI />
+      {props.children}
+    </>
+  );
 };

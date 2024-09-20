@@ -4,6 +4,9 @@ import {CUSTOM_EVENT_NAME_FOR_HOST_JOINED} from './VideoCallWrapper';
 
 export const AppRootContext = createContext({hostUid: null});
 
+/**
+ * App level wrapper component used to set app state throughout the application.
+ */
 export const AppRootWrapper = props => {
   const [hostId, setHostId] = useState(null);
 
