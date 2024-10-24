@@ -1,36 +1,40 @@
-import React, {useState} from 'react';
-import {Text, View, StyleSheet} from 'react-native';
+import React, { useState } from "react";
+import { Text, View, StyleSheet } from "react-native";
 import {
   BaseModal,
   BaseModalActions,
   BaseModalCloseIcon,
   BaseModalContent,
   BaseModalTitle,
-} from '../../ui/BaseModal';
+} from "../../ui/BaseModal";
 import {
   PollResponseFormComplete,
   PollRenderResponseFormBody,
   PollFormSubmitButton,
-} from '../form/poll-response-forms';
+} from "../form/poll-response-forms";
 import {
   PollStatus,
   PollTaskRequestTypes,
   usePoll,
-} from '../../context/poll-context';
-import {getPollTypeDesc} from '../../helpers';
+} from "../../context/poll-context";
+import { getPollTypeDesc } from "../../helpers";
 import {
   ThemeConfig,
   $config,
   TertiaryButton,
   useSidePanel,
-} from 'customization-api';
-import {usePollForm} from '../../hook/usePollForm';
-import {POLL_SIDEBAR_NAME} from '../../../custom-ui';
+} from "customization-api";
+import { usePollForm } from "../../hook/usePollForm";
+import { POLL_SIDEBAR_NAME } from "../../../polling-ui";
 
-export default function PollResponseFormModal({pollId}: {pollId: string}) {
-  const {polls, sendResponseToPoll, closeCurrentModal, handlePollTaskRequest} =
-    usePoll();
-  const {setSidePanel} = useSidePanel();
+export default function PollResponseFormModal({ pollId }: { pollId: string }) {
+  const {
+    polls,
+    sendResponseToPoll,
+    closeCurrentModal,
+    handlePollTaskRequest,
+  } = usePoll();
+  const { setSidePanel } = useSidePanel();
   const [hasResponded, setHasResponded] = useState<boolean>(false);
 
   const pollItem = polls[pollId];
@@ -79,9 +83,10 @@ export default function PollResponseFormModal({pollId}: {pollId: string}) {
       <BaseModalTitle
         title={
           hasResponded
-            ? 'Here are the poll results 🎉'
-            : 'Here’s a poll for you'
-        }>
+            ? "Here are the poll results 🎉"
+            : "Here’s a poll for you"
+        }
+      >
         <BaseModalCloseIcon onClose={onClose} />
       </BaseModalTitle>
       <BaseModalContent>
@@ -110,8 +115,8 @@ export default function PollResponseFormModal({pollId}: {pollId: string}) {
               setAnswer={setAnswer}
               answer={answer}
               pollItem={pollItem}
-              submitted={buttonStatus === 'submitted'}
-              submitting={buttonStatus === 'submitting'}
+              submitted={buttonStatus === "submitted"}
+              submitting={buttonStatus === "submitting"}
             />
           </>
         )}
@@ -142,8 +147,8 @@ export default function PollResponseFormModal({pollId}: {pollId: string}) {
 }
 export const style = StyleSheet.create({
   header: {
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     gap: 8,
   },
   heading: {
@@ -151,20 +156,20 @@ export const style = StyleSheet.create({
     fontSize: ThemeConfig.FontSize.medium,
     fontFamily: ThemeConfig.FontFamily.sansPro,
     lineHeight: 24,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   info: {
     color: $config.FONT_COLOR + ThemeConfig.EmphasisPlus.low,
     fontSize: ThemeConfig.FontSize.tiny,
     fontFamily: ThemeConfig.FontFamily.sansPro,
-    fontWeight: '600',
+    fontWeight: "600",
     lineHeight: 12,
   },
   warning: {
     color: $config.SEMANTIC_ERROR,
     fontSize: ThemeConfig.FontSize.small,
     fontFamily: ThemeConfig.FontFamily.sansPro,
-    fontWeight: '600',
+    fontWeight: "600",
     lineHeight: 12,
   },
   btnContainer: {
@@ -174,13 +179,13 @@ export const style = StyleSheet.create({
   },
   submittedBtn: {
     backgroundColor: $config.SEMANTIC_SUCCESS,
-    cursor: 'default',
+    cursor: "default",
   },
   btnText: {
     color: $config.FONT_COLOR,
     fontSize: ThemeConfig.FontSize.small,
     fontFamily: ThemeConfig.FontFamily.sansPro,
-    fontWeight: '600',
-    textTransform: 'capitalize',
+    fontWeight: "600",
+    textTransform: "capitalize",
   },
 });
