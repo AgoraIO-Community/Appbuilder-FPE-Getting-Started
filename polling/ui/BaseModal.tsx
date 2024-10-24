@@ -1,10 +1,18 @@
-import {Modal, View, StyleSheet, Text} from 'react-native';
+import {
+  Modal,
+  View,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  ScrollView,
+} from 'react-native';
 import React, {ReactNode} from 'react';
 import {
   ThemeConfig,
   hexadecimalTransparency,
   IconButton,
   isMobileUA,
+  $config,
 } from 'customization-api';
 
 interface TitleProps {
@@ -27,35 +35,61 @@ function BaseModalTitle({title, children}: TitleProps) {
 
 interface ContentProps {
   children: ReactNode;
+  noPadding?: boolean;
 }
 
-function BaseModalContent({children}: ContentProps) {
-  return <View style={style.content}>{children}</View>;
+function BaseModalContent({children, noPadding}: ContentProps) {
+  return (
+    <ScrollView contentContainerStyle={style.scrollgrow}>
+      <View style={[style.content, noPadding ? style.noPadding : {}]}>
+        {children}
+      </View>
+    </ScrollView>
+  );
 }
 
 interface ActionProps {
   children: ReactNode;
+  alignRight?: boolean;
 }
-function BaseModalActions({children}: ActionProps) {
-  return <View style={style.actions}>{children}</View>;
+function BaseModalActions({children, alignRight}: ActionProps) {
+  return (
+    <View style={[style.actions, alignRight ? style.alignRight : {}]}>
+      {children}
+    </View>
+  );
 }
 
 type BaseModalProps = {
   visible?: boolean;
+  onClose: () => void;
   children: ReactNode;
   width?: number;
+  cancelable?: boolean;
 };
 
 const BaseModal = ({
   children,
   visible = false,
   width = 650,
+  cancelable = false,
+  onClose,
 }: BaseModalProps) => {
   return (
-    <Modal animationType="none" transparent={true} visible={visible}>
-      <View style={style.baseModalBackDrop}>
+    <Modal
+      animationType="none"
+      transparent={true}
+      visible={visible}
+      onRequestClose={onClose}>
+      <View style={style.baseModalContainer}>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            cancelable && onClose();
+          }}>
+          <View style={style.baseBackdrop} />
+        </TouchableWithoutFeedback>
         <View style={[style.baseModal, {width: width}]}>
-          <View style={style.scrollView}>{children}</View>
+          <View style={style.baseModalBody}>{children}</View>
         </View>
       </View>
     </Modal>
@@ -93,16 +127,15 @@ export {
 };
 
 const style = StyleSheet.create({
-  baseModalBackDrop: {
+  baseModalContainer: {
     flex: 1,
     position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
-    backgroundColor:
-      $config.HARD_CODED_BLACK_COLOR + hexadecimalTransparency['60%'],
+    paddingHorizontal: 20,
   },
   baseModal: {
+    zIndex: 2,
     backgroundColor: $config.CARD_LAYER_1_COLOR,
     borderWidth: 1,
     borderColor: $config.CARD_LAYER_3_COLOR,
@@ -115,20 +148,35 @@ const style = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5,
+    minWidth: 340,
     maxWidth: '90%',
-    maxHeight: 800,
-    overflow: 'scroll',
+    minHeight: 220,
+    maxHeight: '80%', // Set a maximum height for the modal
+    overflow: 'hidden',
   },
-  scrollView: {
+  baseModalBody: {
     flex: 1,
+  },
+  baseBackdrop: {
+    zIndex: 1,
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor:
+      $config.HARD_CODED_BLACK_COLOR + hexadecimalTransparency['60%'],
+  },
+  scrollgrow: {
+    flexGrow: 1,
   },
   header: {
     display: 'flex',
-    paddingHorizontal: 32,
-    paddingVertical: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
     alignItems: 'center',
     gap: 20,
-    minHeight: 72,
+    height: 60,
     justifyContent: 'space-between',
     flexDirection: 'row',
     borderBottomWidth: 1,
@@ -143,18 +191,27 @@ const style = StyleSheet.create({
     letterSpacing: -0.48,
   },
   content: {
-    padding: 32,
+    padding: 20,
     gap: 20,
     display: 'flex',
-    flexDirection: 'column',
-    // minWidth: 620,
+  },
+  noPadding: {
+    padding: 0,
   },
   actions: {
-    height: 72,
-    paddingHorizontal: 32,
-    paddingVertical: 12,
     display: 'flex',
+    flexDirection: 'row',
+    height: 60,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     gap: 16,
+    alignItems: 'center',
+    flexShrink: 0,
+    borderTopWidth: 1,
+    borderTopColor: $config.CARD_LAYER_3_COLOR,
     backgroundColor: $config.CARD_LAYER_2_COLOR,
+  },
+  alignRight: {
+    justifyContent: 'flex-end',
   },
 });

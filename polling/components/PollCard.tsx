@@ -1,115 +1,221 @@
 import React from 'react';
-import {Text, View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import {
   PollItem,
-  PollItemOptionItem,
   PollStatus,
   PollTaskRequestTypes,
   usePoll,
 } from '../context/poll-context';
-import {ThemeConfig, TertiaryButton, useLocalUid} from 'customization-api';
-import {PollOptionList, PollOptionListItemResult} from './poll-option-item-ui';
+import {
+  ThemeConfig,
+  TertiaryButton,
+  useLocalUid,
+  $config,
+  LinkButton,
+  ImageIcon,
+} from 'customization-api';
 import {BaseMoreButton} from '../ui/BaseMoreButton';
 import {PollCardMoreActions} from './PollCardMoreActions';
-import {capitalizeFirstLetter, hasUserVoted} from '../helpers';
-import {PollRenderResponseFormBody} from './form/poll-response-forms';
+import {capitalizeFirstLetter, getPollTypeDesc, hasUserVoted} from '../helpers';
+import {
+  PollFormSubmitButton,
+  PollRenderResponseFormBody,
+} from './form/poll-response-forms';
+import {usePollPermissions} from '../hook/usePollPermissions';
+import {usePollForm} from '../hook/usePollForm';
 
-function PollCard({pollItem, isHost}: {pollItem: PollItem; isHost: boolean}) {
-  const {sendResponseToPoll, handlePollTaskRequest} = usePoll();
-  const localUid = useLocalUid();
-
+const PollCardHeader = ({pollItem}: {pollItem: PollItem}) => {
   const moreBtnRef = React.useRef<View>(null);
   const [actionMenuVisible, setActionMenuVisible] =
     React.useState<boolean>(false);
+  const {editPollForm, handlePollTaskRequest} = usePoll();
+  const {canEdit} = usePollPermissions({pollItem});
 
-  const resultView =
-    isHost ||
-    pollItem.status === PollStatus.FINISHED ||
-    hasUserVoted(pollItem.options, localUid);
+  return (
+    <View style={style.pollCardHeader}>
+      <View style={[style.row, style.gap8]}>
+        <Text style={style.pollCardHeaderText}>
+          {getPollTypeDesc(pollItem.type, pollItem.multiple_response)}
+        </Text>
+        {pollItem.status === PollStatus.LATER && (
+          <>
+            <View style={style.dot} />
+            <Text style={style.pollCardHeaderText}>Draft</Text>
+          </>
+        )}
+      </View>
+      {canEdit && (
+        <View style={style.row}>
+          {pollItem.status === PollStatus.LATER && (
+            <TouchableOpacity
+              style={style.mr8}
+              onPress={() => {
+                editPollForm(pollItem.id);
+              }}>
+              <View style={[style.row, style.gap5]}>
+                <ImageIcon
+                  iconType="plain"
+                  name="pen"
+                  tintColor={$config.PRIMARY_ACTION_BRAND_COLOR}
+                  iconSize={14}
+                />
+                <Text style={style.linkText}>Edit</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+          <BaseMoreButton
+            ref={moreBtnRef}
+            setActionMenuVisible={setActionMenuVisible}
+          />
+          <PollCardMoreActions
+            status={pollItem.status}
+            moreBtnRef={moreBtnRef}
+            actionMenuVisible={actionMenuVisible}
+            setActionMenuVisible={setActionMenuVisible}
+            onCardActionSelect={action => {
+              handlePollTaskRequest(action, pollItem.id);
+              setActionMenuVisible(false);
+            }}
+          />
+        </View>
+      )}
+    </View>
+  );
+};
 
+const PollCardContent = ({pollItem}: {pollItem: PollItem}) => {
+  const {sendResponseToPoll} = usePoll();
+  const {canViewPollDetails} = usePollPermissions({pollItem});
+  const localUid = useLocalUid();
+  const hasSubmittedResponse = hasUserVoted(pollItem.options, localUid);
+
+  const onFormSubmit = (responses: string | string[]) => {
+    sendResponseToPoll(pollItem, responses);
+  };
+
+  const onFormSubmitComplete = () => {
+    //  console.log('supriya');
+    // Declaring this method just to have buttonVisible working
+  };
+
+  const {
+    onSubmit,
+    selectedOption,
+    handleRadioSelect,
+    selectedOptions,
+    handleCheckboxToggle,
+    answer,
+    setAnswer,
+    buttonText,
+    submitDisabled,
+    buttonStatus,
+    buttonVisible,
+  } = usePollForm({
+    pollItem,
+    initialSubmitted: hasSubmittedResponse,
+    onFormSubmit,
+    onFormSubmitComplete,
+  });
+
+  return (
+    <View style={style.pollCardContent}>
+      <Text
+        style={style.pollCardContentQuestionText}
+        numberOfLines={pollItem.status === PollStatus.LATER ? 1 : undefined}
+        ellipsizeMode="tail">
+        {capitalizeFirstLetter(pollItem.question)}
+      </Text>
+      {pollItem.status === PollStatus.LATER ? (
+        <></>
+      ) : (
+        <>
+          <PollRenderResponseFormBody
+            selectedOption={selectedOption}
+            selectedOptions={selectedOptions}
+            handleCheckboxToggle={handleCheckboxToggle}
+            handleRadioSelect={handleRadioSelect}
+            setAnswer={setAnswer}
+            answer={answer}
+            pollItem={pollItem}
+            submitted={buttonStatus === 'submitted'}
+            submitting={buttonStatus === 'submitting'}
+          />
+          {(hasSubmittedResponse && !buttonVisible) ||
+          pollItem.status === PollStatus.FINISHED ? (
+            <></>
+          ) : (
+            <View
+              style={[canViewPollDetails ? style.fullWidth : style.alignRight]}>
+              <PollFormSubmitButton
+                buttonStatus={buttonStatus}
+                onSubmit={onSubmit}
+                submitDisabled={submitDisabled}
+                buttonText={buttonText}
+              />
+            </View>
+          )}
+        </>
+      )}
+    </View>
+  );
+};
+
+const PollCardFooter = ({pollItem}: {pollItem: PollItem}) => {
+  const {handlePollTaskRequest} = usePoll();
+  const {canEnd, canViewPollDetails} = usePollPermissions({pollItem});
+
+  return (
+    <View style={style.pollCardFooter}>
+      {canEnd && pollItem.status === PollStatus.ACTIVE && (
+        <View>
+          <TertiaryButton
+            text="End Poll"
+            onPress={() => {
+              handlePollTaskRequest(
+                PollTaskRequestTypes.FINISH_CONFIRMATION,
+                pollItem.id,
+              );
+            }}
+          />
+        </View>
+      )}
+      {canViewPollDetails && (
+        <View>
+          <View style={style.linkBtnContainer}>
+            <LinkButton
+              text="View Details"
+              textStyle={style.linkText}
+              onPress={() =>
+                handlePollTaskRequest(
+                  PollTaskRequestTypes.VIEW_DETAILS,
+                  pollItem.id,
+                )
+              }
+            />
+          </View>
+        </View>
+      )}
+    </View>
+  );
+};
+
+function PollCard({pollItem}: {pollItem: PollItem}) {
   return (
     <View style={style.pollItem}>
       <View style={style.pollCard}>
-        <View style={style.pollCardHeader}>
-          <Text style={style.pollCardHeaderText}>
-            {capitalizeFirstLetter(pollItem.status)}
-          </Text>
-          <View>
-            {isHost ? (
-              <>
-                <BaseMoreButton
-                  ref={moreBtnRef}
-                  setActionMenuVisible={setActionMenuVisible}
-                />
-                <PollCardMoreActions
-                  status={pollItem.status}
-                  moreBtnRef={moreBtnRef}
-                  actionMenuVisible={actionMenuVisible}
-                  setActionMenuVisible={setActionMenuVisible}
-                  onCardActionSelect={action => {
-                    handlePollTaskRequest(action, pollItem.id);
-                  }}
-                />
-              </>
-            ) : (
-              <></>
-            )}
-          </View>
-        </View>
-        <View style={style.pollCardContent}>
-          <View style={style.fullWidth}>
-            <Text style={style.pollCardContentQuestionText}>
-              {pollItem.question}
-            </Text>
-          </View>
-          <View style={style.fullWidth}>
-            {resultView ? (
-              <PollOptionList>
-                {pollItem.options.map(
-                  (item: PollItemOptionItem, index: number) => (
-                    <PollOptionListItemResult
-                      key={index}
-                      optionItem={item}
-                      showYourVote={!isHost}
-                    />
-                  ),
-                )}
-              </PollOptionList>
-            ) : pollItem.status === PollStatus.ACTIVE ? (
-              <View style={style.pollResponseFormView}>
-                <PollRenderResponseFormBody
-                  pollItem={pollItem}
-                  onFormComplete={(responses: string | string[]) => {
-                    sendResponseToPoll(pollItem, responses);
-                  }}
-                />
-              </View>
-            ) : (
-              <Text>Form not published yet. Incorrect state</Text>
-            )}
-          </View>
-        </View>
-        <View style={style.pollCardFooter}>
-          <View style={style.pollCardFooterActions}>
-            {resultView ? (
-              <TertiaryButton
-                text="View Details"
-                onPress={() =>
-                  handlePollTaskRequest(
-                    PollTaskRequestTypes.VIEW_DETAILS,
-                    pollItem.id,
-                  )
-                }
-              />
-            ) : (
-              <></>
-            )}
-          </View>
-        </View>
+        <PollCardHeader pollItem={pollItem} />
+        <PollCardContent pollItem={pollItem} />
+        {pollItem.status !== PollStatus.LATER && (
+          <>
+            <PollCardFooter pollItem={pollItem} />
+          </>
+        )}
       </View>
     </View>
   );
 }
+export {PollCard};
+
 const style = StyleSheet.create({
   fullWidth: {
     alignSelf: 'stretch',
@@ -118,22 +224,24 @@ const style = StyleSheet.create({
     marginVertical: 12,
   },
   pollCard: {
-    padding: 12,
     display: 'flex',
     flexDirection: 'column',
-    gap: 12,
-    alignSelf: 'stretch',
-    backgroundColor: $config.CARD_LAYER_3_COLOR,
-    borderRadius: 15,
+    gap: 8,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: $config.CARD_LAYER_3_COLOR,
+    backgroundColor: $config.CARD_LAYER_1_COLOR,
   },
   pollCardHeader: {
     height: 24,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   pollCardHeaderText: {
-    color: '#04D000',
+    color: $config.FONT_COLOR + ThemeConfig.EmphasisPlus.low,
     fontSize: ThemeConfig.FontSize.tiny,
     fontFamily: ThemeConfig.FontFamily.sansPro,
     fontWeight: '600',
@@ -147,20 +255,55 @@ const style = StyleSheet.create({
     alignItems: 'flex-start',
   },
   pollCardContentQuestionText: {
-    color: $config.FONT_COLOR,
+    color: $config.FONT_COLOR + ThemeConfig.EmphasisPlus.high,
+    fontSize: ThemeConfig.FontSize.normal,
+    fontFamily: ThemeConfig.FontFamily.sansPro,
+    fontWeight: '700',
+    lineHeight: 19,
+  },
+  pollCardFooter: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8,
+  },
+  linkBtnContainer: {
+    height: 36,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  linkText: {
+    textAlign: 'center',
+    color: $config.PRIMARY_ACTION_BRAND_COLOR,
     fontSize: ThemeConfig.FontSize.small,
     fontFamily: ThemeConfig.FontFamily.sansPro,
     fontWeight: '600',
     lineHeight: 16,
   },
-  pollCardFooter: {},
-  pollCardFooterActions: {
-    alignSelf: 'flex-start',
+  space: {
+    marginHorizontal: 8,
   },
-  pollResponseFormView: {
+  row: {
     display: 'flex',
-    gap: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  gap8: {
+    gap: 8,
+  },
+  gap5: {
+    gap: 5,
+  },
+  mr8: {
+    marginRight: 8,
+  },
+  dot: {
+    width: 5,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: $config.FONT_COLOR + ThemeConfig.EmphasisPlus.low,
+  },
+  alignRight: {
+    alignSelf: 'flex-end',
   },
 });
-
-export {PollCard};

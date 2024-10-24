@@ -1,4 +1,10 @@
-import {Text, View, StyleSheet, TextInput} from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
 import React from 'react';
 import {
   BaseModalTitle,
@@ -7,14 +13,17 @@ import {
   BaseModalCloseIcon,
 } from '../../ui/BaseModal';
 import {
-  LinkButton,
-  Checkbox,
   IconButton,
   PrimaryButton,
   ThemeConfig,
+  $config,
+  TertiaryButton,
+  ImageIcon,
+  PlatformWrapper,
 } from 'customization-api';
 import {PollFormErrors, PollItem, PollKind} from '../../context/poll-context';
 import {nanoid} from 'nanoid';
+import BaseButtonWithToggle from '../../ui/BaseButtonWithToggle';
 
 function FormTitle({title}: {title: string}) {
   return (
@@ -25,11 +34,49 @@ function FormTitle({title}: {title: string}) {
 }
 interface Props {
   form: PollItem;
-  setForm: React.Dispatch<React.SetStateAction<PollItem>>;
+  setForm: React.Dispatch<React.SetStateAction<PollItem | null>>;
   onPreview: () => void;
+  onSave: (launch?: boolean) => void;
   errors: Partial<PollFormErrors>;
   onClose: () => void;
 }
+
+// Define the form action types and reducer for state management
+const formReducer = (
+  state: PollItem,
+  action: {type: string; payload?: any},
+) => {
+  switch (action.type) {
+    case 'UPDATE_FIELD':
+      return {...state, [action.payload.field]: action.payload.value};
+    case 'UPDATE_OPTION':
+      return {
+        ...state,
+        options: state.options?.map((option, index) =>
+          index === action.payload.index
+            ? {...option, ...action.payload.option}
+            : option,
+        ),
+      };
+    case 'ADD_OPTION':
+      return {
+        ...state,
+        options: [
+          ...(state.options || []),
+          {text: '', value: '', votes: [], percent: '0'},
+        ],
+      };
+    case 'DELETE_OPTION':
+      return {
+        ...state,
+        options:
+          state.options?.filter((_, index) => index !== action.payload.index) ||
+          [],
+      };
+    default:
+      return state;
+  }
+};
 
 export default function DraftPollFormView({
   form,
@@ -37,6 +84,7 @@ export default function DraftPollFormView({
   onPreview,
   errors,
   onClose,
+  onSave,
 }: Props) {
   const handleInputChange = (field: string, value: string | boolean) => {
     setForm({
@@ -45,7 +93,25 @@ export default function DraftPollFormView({
     });
   };
 
-  const handleCheckboxChange = (field: keyof typeof form, value: boolean) => {
+  const handleCheckboxChange = (field: keyof PollItem, value: boolean) => {
+    if (field === 'anonymous' && value) {
+      setForm({
+        ...form,
+        [field]: value,
+        share_attendee: false,
+        share_host: false,
+      });
+      return;
+    } else if (field === 'share_attendee' || field === 'share_host') {
+      if (value) {
+        setForm({
+          ...form,
+          [field]: value,
+          anonymous: false,
+        });
+        return;
+      }
+    }
     setForm({
       ...form,
       [field]: value,
@@ -61,7 +127,7 @@ export default function DraftPollFormView({
       setForm({
         ...form,
         options: [
-          ...form.options,
+          ...(form.options || []),
           {
             text: '',
             value: '',
@@ -72,11 +138,11 @@ export default function DraftPollFormView({
       });
     }
     if (action === 'update') {
-      setForm({
-        ...form,
-        options: form.options.map((option, i) => {
+      setForm(prevForm => ({
+        ...prevForm,
+        options: prevForm.options?.map((option, i) => {
           if (i === index) {
-            const text = value.trim();
+            const text = value;
             const lowerText = text
               .replace(/\s+/g, '-')
               .toLowerCase()
@@ -86,54 +152,45 @@ export default function DraftPollFormView({
               ...option,
               text: text,
               value: lowerText,
-              votes: [],
             };
           }
           return option;
         }),
-      });
+      }));
     }
     if (action === 'delete') {
       setForm({
         ...form,
-        options: form.options.filter((option, i) => i !== index),
+        options: form.options?.filter((option, i) => i !== index) || [],
       });
-    }
-  };
-
-  const getTitle = (type: PollKind) => {
-    if (type === PollKind.MCQ) {
-      return 'Multiple Choice';
-    }
-    if (type === PollKind.OPEN_ENDED) {
-      return 'Open Ended Poll';
-    }
-    if (type === PollKind.YES_NO) {
-      return 'Yes/No';
     }
   };
 
   return (
     <>
-      <BaseModalTitle title={getTitle(form.type)}>
+      <BaseModalTitle title={'Create Poll'}>
         <BaseModalCloseIcon onClose={onClose} />
       </BaseModalTitle>
       <BaseModalContent>
-        {/* Question section */}
-        <View style={style.createPollBox}>
+        <View style={style.pForm}>
+          {/* Question section */}
           <View style={style.pFormSection}>
             <FormTitle title="Question" />
             <View>
               <TextInput
+                id="question"
                 autoComplete="off"
-                style={style.pFormTextarea}
+                style={[
+                  style.pFormTextarea,
+                  errors?.question ? style.errorBorder : {},
+                ]}
                 multiline={true}
                 numberOfLines={4}
-                value={form.question}
+                value={form.question || ''}
                 onChangeText={text => {
                   handleInputChange('question', text);
                 }}
-                placeholder="Enter poll question here..."
+                placeholder="Enter your question here..."
                 placeholderTextColor={
                   $config.FONT_COLOR + ThemeConfig.EmphasisPlus.low
                 }
@@ -143,142 +200,168 @@ export default function DraftPollFormView({
               )}
             </View>
           </View>
-          {/* Options section */}
-          {form.type === PollKind.MCQ || form.type === PollKind.YES_NO ? (
+          {/* MCQ  section */}
+          {form.type === PollKind.MCQ ? (
             <View style={style.pFormSection}>
-              <FormTitle title="Responses" />
+              <View style={style.pFormTitleRow}>
+                <FormTitle title="Responses" />
+                <View style={style.pushRight}>
+                  <View style={style.pFormToggle}>
+                    <BaseButtonWithToggle
+                      key="multiple-response-toggle"
+                      text="Allow Multiple Selections"
+                      value={form.multiple_response}
+                      onPress={value => {
+                        handleCheckboxChange('multiple_response', value);
+                      }}
+                    />
+                  </View>
+                </View>
+              </View>
               <View style={style.pFormOptions}>
-                {form.type === PollKind.MCQ ? (
-                  <>
-                    {form.options.map((option, index) => (
-                      <View style={style.pFormOptionCard} key={index}>
-                        <Text style={style.pFormOptionPrefix}>{index + 1}</Text>
-                        <TextInput
-                          autoComplete="off"
-                          id="input"
-                          style={style.pFormInput}
-                          value={option.text}
-                          onChangeText={text => {
-                            updateFormOption('update', text, index);
-                          }}
-                          placeholder="Add text here..."
-                          placeholderTextColor={
-                            $config.FONT_COLOR + ThemeConfig.EmphasisPlus.low
-                          }
-                        />
-                        {index > 1 ? (
-                          <View>
-                            <IconButton
-                              iconProps={{
-                                iconType: 'plain',
-                                iconContainerStyle: {
-                                  padding: 5,
-                                },
-                                iconSize: 20,
-                                name: 'close',
-                                tintColor: $config.CARD_LAYER_5_COLOR,
-                              }}
-                              onPress={() => {
-                                updateFormOption('delete', option.text, index);
-                              }}
-                            />
-                          </View>
-                        ) : (
-                          <></>
-                        )}
-                      </View>
-                    ))}
-                    <View style={style.pFormAddOptionLinkSection}>
-                      <LinkButton
-                        text="Add option"
-                        textStyle={style.pFormOptionLink}
-                        onPress={() => {
-                          updateFormOption('add', null, null);
-                        }}
+                {form.options?.map((option, index) => (
+                  <View style={style.pFormOptionCard} key={index}>
+                    <View style={style.pFormOptionPrefix}>
+                      <ImageIcon
+                        iconType="plain"
+                        name={form.multiple_response ? 'square' : 'circle'}
+                        iconSize={24}
+                        tintColor={$config.FONT_COLOR}
                       />
                     </View>
-                    {errors?.options && (
-                      <Text style={style.errorText}>
-                        {errors.options.message}
-                      </Text>
+                    <TextInput
+                      autoComplete="off"
+                      id="input"
+                      style={style.pFormInput}
+                      value={option.text}
+                      onChangeText={(text: string) => {
+                        updateFormOption('update', text, index);
+                      }}
+                      placeholder={`Option ${index + 1}`}
+                      placeholderTextColor={
+                        $config.FONT_COLOR + ThemeConfig.EmphasisPlus.low
+                      }
+                    />
+                    {index > 1 ? (
+                      <View>
+                        <IconButton
+                          iconProps={{
+                            iconType: 'plain',
+                            iconContainerStyle: {
+                              padding: 5,
+                            },
+                            iconSize: 20,
+                            name: 'close',
+                            tintColor: $config.CARD_LAYER_5_COLOR,
+                          }}
+                          onPress={() => {
+                            updateFormOption('delete', '', index);
+                          }}
+                        />
+                      </View>
+                    ) : (
+                      <></>
                     )}
-                  </>
+                  </View>
+                ))}
+                {form.options?.length < 5 ? (
+                  <PlatformWrapper>
+                    {(isHovered: boolean) => (
+                      <TouchableOpacity
+                        style={[
+                          style.pFormOptionCard,
+                          style.noBorder,
+                          isHovered ? style.hoverBorder : {},
+                        ]}
+                        onPress={() => {
+                          updateFormOption('add', '', -1);
+                        }}>
+                        <Text
+                          style={{
+                            ...style.pFormOptionText,
+                            ...style.pFormOptionLink,
+                          }}>
+                          + Add option
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </PlatformWrapper>
                 ) : (
                   <></>
                 )}
-                {form.type === PollKind.YES_NO ? (
-                  <>
-                    <View
-                      style={[style.pFormOptionCard, style.verticalPadding]}>
-                      <Text style={style.pFormOptionText}>Yes</Text>
-                    </View>
-                    <View
-                      style={[style.pFormOptionCard, style.verticalPadding]}>
-                      <Text style={style.pFormOptionText}>No</Text>
-                    </View>
-                  </>
-                ) : (
-                  <></>
+                {errors?.options && (
+                  <Text style={style.errorText}>{errors.options.message}</Text>
                 )}
               </View>
             </View>
           ) : (
             <></>
           )}
-          {/* Sections templete */}
-          <View style={style.pFormSection}>
-            <View>
-              {/* <View style={style.pFormCheckboxContainer}>
-                {form.type === PollKind.MCQ ? (
-                  <Checkbox
-                    checked={form.multiple_response}
-                    label={'Allow mutiple selections'}
-                    labelStye={style.pFormOptionText}
-                    onChange={() => {
-                      handleCheckboxChange(
-                        'multiple_response',
-                        !form.multiple_response,
-                      );
-                    }}
-                  />
-                ) : (
-                  <></>
-                )}
-              </View> */}
-              {/* <View style={style.pFormCheckboxContainer}>
-                <Checkbox
-                  checked={form.share}
-                  label={'Share results with the respondants'}
-                  labelStye={style.pFormOptionText}
-                  onChange={() => {
-                    handleCheckboxChange('share', !form.share);
-                  }}
-                />
-              </View> */}
-              {/* <View style={style.pFormCheckboxContainer}>
-                <Checkbox
-                  checked={form.duration}
-                  label={'Set Timer Duration'}
-                  labelStye={style.pFormOptionText}
-                  onChange={() => {
-                    handleCheckboxChange('duration', !form.duration);
-                  }}
-                />
-              </View> */}
+          {/* Yes / No section */}
+          {form.type === PollKind.YES_NO ? (
+            <View style={style.pFormSection}>
+              <FormTitle title="Responses" />
+              <View style={style.pFormOptions}>
+                <View style={[style.pFormOptionCard, style.verticalPadding]}>
+                  <View style={style.pFormOptionPrefix}>
+                    <ImageIcon
+                      iconType="plain"
+                      name={'circle'}
+                      iconSize={24}
+                      tintColor={$config.FONT_COLOR}
+                    />
+                  </View>
+                  <Text style={style.pFormOptionText}>Yes</Text>
+                </View>
+                <View style={[style.pFormOptionCard, style.verticalPadding]}>
+                  <View style={style.pFormOptionPrefix}>
+                    <ImageIcon
+                      iconType="plain"
+                      name={'circle'}
+                      iconSize={24}
+                      tintColor={$config.FONT_COLOR}
+                    />
+                  </View>
+                  <Text style={style.pFormOptionText}>No</Text>
+                </View>
+              </View>
             </View>
-          </View>
+          ) : (
+            <></>
+          )}
         </View>
       </BaseModalContent>
       <BaseModalActions>
         <View style={style.previewActions}>
-          <PrimaryButton
-            containerStyle={style.btnContainer}
-            textStyle={style.btnText}
-            onPress={() => {
-              onPreview();
-            }}
-            text="Preview"
-          />
+          <View>
+            <TertiaryButton
+              containerStyle={style.btnContainer}
+              text="Save for later"
+              disabled={!form.question?.trim()}
+              onPress={() => {
+                try {
+                  onSave(false);
+                } catch (error) {
+                  console.error('Error saving form:', error);
+                }
+              }}
+            />
+          </View>
+          <View>
+            <PrimaryButton
+              containerStyle={style.btnContainer}
+              text="Preview"
+              disabled={!form.question?.trim()}
+              textStyle={style.btnText}
+              onPress={() => {
+                try {
+                  onPreview();
+                } catch (error) {
+                  console.error('Error previewing form:', error);
+                }
+              }}
+            />
+          </View>
         </View>
       </BaseModalActions>
     </>
@@ -286,19 +369,22 @@ export default function DraftPollFormView({
 }
 
 export const style = StyleSheet.create({
-  createPollBox: {
+  pForm: {
     display: 'flex',
     flexDirection: 'column',
-    gap: 20,
+    gap: 24,
   },
   pFormSection: {
-    gap: 12,
+    gap: 8,
   },
-  pFormAddOptionLinkSection: {
-    marginTop: -8,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    alignItems: 'flex-start',
+  pFormSettings: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 4,
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: $config.CARD_LAYER_2_COLOR,
   },
   pFormTitle: {
     color: $config.FONT_COLOR + ThemeConfig.EmphasisPlus.high,
@@ -307,9 +393,14 @@ export const style = StyleSheet.create({
     lineHeight: 16,
     fontWeight: '600',
   },
+  pFormTitleRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   pFormTextarea: {
     color: $config.FONT_COLOR + ThemeConfig.EmphasisPlus.high,
-    fontSize: ThemeConfig.FontSize.small,
+    fontSize: ThemeConfig.FontSize.normal,
     fontFamily: ThemeConfig.FontFamily.sansPro,
     lineHeight: 16,
     fontWeight: '400',
@@ -317,15 +408,15 @@ export const style = StyleSheet.create({
     borderWidth: 1,
     borderColor: $config.INPUT_FIELD_BORDER_COLOR,
     backgroundColor: $config.INPUT_FIELD_BACKGROUND_COLOR,
-    height: 110,
+    height: 60,
     outlineStyle: 'none',
     padding: 20,
   },
   pFormOptionText: {
     color: $config.FONT_COLOR + ThemeConfig.EmphasisPlus.high,
-    fontSize: ThemeConfig.FontSize.small,
+    fontSize: ThemeConfig.FontSize.normal,
     fontFamily: ThemeConfig.FontFamily.sansPro,
-    lineHeight: 16,
+    lineHeight: 24,
     fontWeight: '400',
   },
   pFormOptionPrefix: {
@@ -333,49 +424,68 @@ export const style = StyleSheet.create({
     paddingRight: 4,
   },
   pFormOptionLink: {
-    fontWeight: '400',
-    lineHeight: 24,
+    color: $config.PRIMARY_ACTION_BRAND_COLOR,
+    height: 48,
+    paddingVertical: 12,
   },
   pFormOptions: {
-    paddingVertical: 8,
     gap: 8,
   },
   pFormInput: {
     flex: 1,
     color: $config.FONT_COLOR + ThemeConfig.EmphasisPlus.high,
-    fontSize: ThemeConfig.FontSize.small,
+    fontSize: ThemeConfig.FontSize.normal,
     fontFamily: ThemeConfig.FontFamily.sansPro,
-    lineHeight: 16,
+    lineHeight: 24,
     fontWeight: '400',
     outlineStyle: 'none',
+    borderColor: $config.INPUT_FIELD_BORDER_COLOR,
     backgroundColor: $config.INPUT_FIELD_BACKGROUND_COLOR,
-    borderRadius: 9,
+    borderRadius: 8,
     paddingVertical: 12,
+    height: 48,
+  },
+  pFormSettingsText: {
+    color: $config.FONT_COLOR + ThemeConfig.EmphasisPlus.high,
+    fontSize: ThemeConfig.FontSize.tiny,
+    fontFamily: ThemeConfig.FontFamily.sansPro,
+    lineHeight: 12,
+    fontWeight: '400',
   },
   pFormOptionCard: {
     display: 'flex',
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    alignSelf: 'stretch',
-    gap: 8,
+    gap: 4,
     backgroundColor: $config.INPUT_FIELD_BACKGROUND_COLOR,
-    borderRadius: 9,
+    borderColor: $config.INPUT_FIELD_BORDER_COLOR,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  noBorder: {
+    borderColor: 'transparent',
+  },
+  pFormToggle: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 12,
+    justifyContent: 'space-between',
+    position: 'relative',
   },
   verticalPadding: {
     paddingVertical: 12,
   },
-  pFormCheckboxContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
+  pFormCheckboxContainer: {},
   previewActions: {
     flex: 1,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
+    gap: 16,
   },
   btnContainer: {
     minWidth: 150,
@@ -383,17 +493,28 @@ export const style = StyleSheet.create({
     borderRadius: 4,
   },
   btnText: {
-    color: $config.FONT_COLOR,
+    color: $config.PRIMARY_ACTION_TEXT_COLOR,
     fontSize: ThemeConfig.FontSize.small,
     fontFamily: ThemeConfig.FontFamily.sansPro,
     fontWeight: '600',
     textTransform: 'capitalize',
   },
+  errorBorder: {
+    borderColor: $config.SEMANTIC_ERROR,
+  },
+  hoverBorder: {
+    borderColor: $config.PRIMARY_ACTION_BRAND_COLOR,
+  },
   errorText: {
     color: $config.SEMANTIC_ERROR,
     fontSize: ThemeConfig.FontSize.tiny,
     fontFamily: ThemeConfig.FontFamily.sansPro,
-    paddingLeft: 5,
-    paddingTop: 5,
+    lineHeight: 12,
+    fontWeight: '400',
+    paddingTop: 8,
+    paddingLeft: 8,
+  },
+  pushRight: {
+    marginLeft: 'auto',
   },
 });

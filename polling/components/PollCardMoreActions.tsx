@@ -5,6 +5,7 @@ import {
   ActionMenuItem,
   calculatePosition,
   ThemeConfig,
+  $config,
 } from 'customization-api';
 import {PollStatus, PollTaskRequestTypes} from '../context/poll-context';
 
@@ -23,71 +24,73 @@ const PollCardMoreActions = (props: PollCardMoreActionsMenuProps) => {
     onCardActionSelect,
     status,
   } = props;
-  const actionMenuitems: ActionMenuItem[] = [];
+  const actionMenuItems: ActionMenuItem[] = [];
   const [modalPosition, setModalPosition] = React.useState({});
   const [isPosCalculated, setIsPosCalculated] = React.useState(false);
   const {width: globalWidth, height: globalHeight} = useWindowDimensions();
 
-  actionMenuitems.push({
-    icon: 'send',
-    iconColor: $config.SECONDARY_ACTION_COLOR,
-    textColor: $config.FONT_COLOR,
-    title: 'Send Poll',
-    titleStyle: {
-      fontSize: ThemeConfig.FontSize.small,
-    },
-    disabled: status !== PollStatus.LATER,
-    onPress: () => {
-      onCardActionSelect(PollTaskRequestTypes.SEND);
-      setActionMenuVisible(false);
-    },
-  });
+  status !== PollStatus.FINISHED &&
+    actionMenuItems.push({
+      icon: 'send',
+      iconColor: $config.SECONDARY_ACTION_COLOR,
+      textColor: $config.FONT_COLOR,
+      title: 'Launch Poll',
+      titleStyle: {
+        fontSize: ThemeConfig.FontSize.small,
+      },
+      disabled: status !== PollStatus.LATER,
+      onPress: () => {
+        onCardActionSelect(PollTaskRequestTypes.SEND);
+        setActionMenuVisible(false);
+      },
+    });
 
-  actionMenuitems.push({
-    icon: 'share',
-    iconColor: $config.SECONDARY_ACTION_COLOR,
-    textColor: $config.FONT_COLOR,
-    title: 'Publish Result',
-    titleStyle: {
-      fontSize: ThemeConfig.FontSize.small,
-    },
-    disabled: status === PollStatus.LATER,
-    onPress: () => {
-      onCardActionSelect(PollTaskRequestTypes.PUBLISH);
-      setActionMenuVisible(false);
-    },
-  });
+  // status === PollStatus.ACTIVE &&
+  //   actionMenuItems.push({
+  //     icon: 'share',
+  //     iconColor: $config.SECONDARY_ACTION_COLOR,
+  //     textColor: $config.FONT_COLOR,
+  //     title: 'Publish Result',
+  //     titleStyle: {
+  //       fontSize: ThemeConfig.FontSize.small,
+  //     },
+  //     onPress: () => {
+  //       onCardActionSelect(PollTaskRequestTypes.PUBLISH);
+  //       setActionMenuVisible(false);
+  //     },
+  //   });
 
-  actionMenuitems.push({
-    icon: 'download',
-    iconColor: $config.SECONDARY_ACTION_COLOR,
-    textColor: $config.FONT_COLOR,
-    title: 'Export Resuts',
-    titleStyle: {
-      fontSize: ThemeConfig.FontSize.small,
-    },
-    onPress: () => {
-      onCardActionSelect(PollTaskRequestTypes.EXPORT);
-      setActionMenuVisible(false);
-    },
-  });
+  status !== PollStatus.LATER &&
+    actionMenuItems.push({
+      icon: 'download',
+      iconColor: $config.SECONDARY_ACTION_COLOR,
+      textColor: $config.FONT_COLOR,
+      title: 'Export Resuts',
+      titleStyle: {
+        fontSize: ThemeConfig.FontSize.small,
+      },
+      onPress: () => {
+        onCardActionSelect(PollTaskRequestTypes.EXPORT);
+        setActionMenuVisible(false);
+      },
+    });
 
-  actionMenuitems.push({
+  actionMenuItems.push({
     icon: 'close',
     iconColor: $config.SECONDARY_ACTION_COLOR,
     textColor: $config.FONT_COLOR,
-    title: 'Finish Poll',
+    title: 'End Poll',
     titleStyle: {
       fontSize: ThemeConfig.FontSize.small,
     },
-    disabled: status === PollStatus.LATER || status === PollStatus.FINISHED,
+    disabled: status !== PollStatus.ACTIVE,
     onPress: () => {
-      onCardActionSelect(PollTaskRequestTypes.FINISH);
+      onCardActionSelect(PollTaskRequestTypes.FINISH_CONFIRMATION);
       setActionMenuVisible(false);
     },
   });
 
-  actionMenuitems.push({
+  actionMenuItems.push({
     icon: 'delete',
     iconColor: $config.SEMANTIC_ERROR,
     textColor: $config.SEMANTIC_ERROR,
@@ -96,13 +99,13 @@ const PollCardMoreActions = (props: PollCardMoreActionsMenuProps) => {
       fontSize: ThemeConfig.FontSize.small,
     },
     onPress: () => {
-      onCardActionSelect(PollTaskRequestTypes.DELETE);
+      onCardActionSelect(PollTaskRequestTypes.DELETE_CONFIRMATION);
       setActionMenuVisible(false);
     },
   });
 
   React.useEffect(() => {
-    if (actionMenuVisible) {
+    if (actionMenuVisible && moreBtnRef.current) {
       //getting btnRef x,y
       moreBtnRef?.current?.measure(
         (
@@ -126,8 +129,7 @@ const PollCardMoreActions = (props: PollCardMoreActionsMenuProps) => {
         },
       );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [actionMenuVisible]);
+  }, [actionMenuVisible, globalWidth, globalHeight, moreBtnRef]);
 
   return (
     <>
@@ -136,7 +138,7 @@ const PollCardMoreActions = (props: PollCardMoreActionsMenuProps) => {
         actionMenuVisible={actionMenuVisible && isPosCalculated}
         setActionMenuVisible={setActionMenuVisible}
         modalPosition={modalPosition}
-        items={actionMenuitems}
+        items={actionMenuItems}
       />
     </>
   );

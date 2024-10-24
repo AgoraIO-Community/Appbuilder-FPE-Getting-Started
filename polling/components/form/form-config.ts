@@ -1,10 +1,5 @@
 import {nanoid} from 'nanoid';
-import {
-  PollKind,
-  PollItem,
-  PollAccess,
-  PollStatus,
-} from '../../context/poll-context';
+import {PollKind, PollItem, PollStatus} from '../../context/poll-context';
 
 const POLL_DURATION = 600; // takes seconds
 
@@ -14,28 +9,32 @@ const getPollExpiresAtTime = (interval: number): number => {
   return expiresAT;
 };
 
-const initPollForm = (kind: PollKind): PollItem => {
+const initPollForm = (
+  kind: PollKind,
+  user: {uid: number; name: string},
+): PollItem => {
   if (kind === PollKind.OPEN_ENDED) {
     return {
       id: nanoid(4),
       type: PollKind.OPEN_ENDED,
-      access: PollAccess.PUBLIC,
       status: PollStatus.LATER,
       question: '',
       answers: null,
       options: null,
       multiple_response: false,
-      share: false,
+      share_attendee: true,
+      share_host: true,
+      anonymous: false,
       duration: false,
-      expiresAt: null,
-      createdBy: -1,
+      expiresAt: 0,
+      createdAt: Date.now(),
+      createdBy: {...user},
     };
   }
   if (kind === PollKind.MCQ) {
     return {
       id: nanoid(4),
       type: PollKind.MCQ,
-      access: PollAccess.PUBLIC,
       status: PollStatus.LATER,
       question: '',
       answers: null,
@@ -59,18 +58,20 @@ const initPollForm = (kind: PollKind): PollItem => {
           percent: '0',
         },
       ],
-      multiple_response: true,
-      share: false,
+      multiple_response: false,
+      share_attendee: true,
+      share_host: true,
+      anonymous: false,
       duration: false,
-      expiresAt: null,
-      createdBy: -1,
+      expiresAt: 0,
+      createdAt: Date.now(),
+      createdBy: {...user},
     };
   }
   if (kind === PollKind.YES_NO) {
     return {
       id: nanoid(4),
       type: PollKind.YES_NO,
-      access: PollAccess.PUBLIC,
       status: PollStatus.LATER,
       question: '',
       answers: null,
@@ -89,12 +90,17 @@ const initPollForm = (kind: PollKind): PollItem => {
         },
       ],
       multiple_response: false,
-      share: false,
+      share_attendee: true,
+      share_host: true,
+      anonymous: false,
       duration: false,
-      expiresAt: null,
-      createdBy: -1,
+      expiresAt: 0,
+      createdAt: Date.now(),
+      createdBy: {...user},
     };
   }
+  // If none of the above conditions are met, throw an error or return a default value
+  throw new Error(`Unknown PollKind: ${kind}`);
 };
 
 const getAttributeLengthInKb = (attribute: string): string => {

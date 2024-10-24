@@ -1,14 +1,28 @@
-import {Text, View, StyleSheet, TextInput} from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  TextInput,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import React, {useState} from 'react';
-import {PollItem, PollKind} from '../../context/poll-context';
-import PollTimer from '../PollTimer';
+import {PollKind, PollStatus} from '../../context/poll-context';
 import {
   ImageIcon,
   Checkbox,
   PrimaryButton,
   ThemeConfig,
+  $config,
+  useLocalUid,
+  PlatformWrapper,
 } from 'customization-api';
 import BaseRadioButton from '../../ui/BaseRadioButton';
+import {
+  PollOptionList,
+  PollOptionInputListItem,
+  PollItemFill,
+} from '../poll-option-item-ui';
+import {PollFormButton, PollFormInput} from '../../hook/usePollForm';
 
 function PollResponseFormComplete() {
   return (
@@ -22,93 +36,47 @@ function PollResponseFormComplete() {
         />
       </View>
       <View>
-        <Text style={style.heading4}>Thank you for your response</Text>
+        <Text style={style.thankyouText}>Thank you for your response</Text>
       </View>
     </View>
   );
 }
 
-interface PollResponseFormProps {
-  pollItem: PollItem;
-  isFormFreezed: boolean;
-  onComplete: (responses: string | string[]) => void;
-}
-
-function PollRenderResponseForm({
-  pollItem,
-  onFormComplete,
-}: {
-  pollItem: PollItem;
-  onFormComplete: (responses: string | string[]) => void;
-}): JSX.Element {
-  return (
-    <>
-      <PollRenderResponseFormHeader pollItem={pollItem} />
-      <PollRenderResponseFormBody
-        pollItem={pollItem}
-        onFormComplete={onFormComplete}
-      />
-    </>
-  );
-}
-
-function PollRenderResponseFormHeader({
-  pollItem,
-}: {
-  pollItem: PollItem;
-}): JSX.Element {
-  return (
-    <>
-      {pollItem.duration ? <PollTimer expiresAt={pollItem.expiresAt} /> : null}
-      <Text style={style.heading4}>{pollItem.question}</Text>
-    </>
-  );
-}
-
-function PollRenderResponseFormBody({
-  pollItem,
-  onFormComplete,
-}: {
-  pollItem: PollItem;
-  onFormComplete: (responses: string | string[]) => void;
-}): JSX.Element {
+function PollRenderResponseFormBody(
+  props: PollFormInput & {
+    submitted: boolean;
+    submitting: boolean;
+  },
+): JSX.Element {
   // Directly use switch case logic inside the render
-  switch (pollItem.type) {
-    case PollKind.OPEN_ENDED:
-      return (
-        <PollResponseQuestionForm
-          isFormFreezed={false} // TODO:SUP Based on poll timer
-          pollItem={pollItem}
-          onComplete={onFormComplete}
-        />
-      );
+  switch (props.pollItem.type) {
+    // case PollKind.OPEN_ENDED:
+    //   return (
+    //     <PollResponseQuestionForm
+    //       isFormFreezed={false} // TODO:SUP Based on poll timer
+    //       pollItem={pollItem}
+    //       onFormSubmit={onFormSubmit}
+    //       hasUserResponded={hasUserResponded}
+    //       onFormSubmitComplete={onFormSubmitComplete}
+    //     />
+    //   );
     case PollKind.MCQ:
     case PollKind.YES_NO:
-      return (
-        <PollResponseMCQForm
-          isFormFreezed={false} // TODO:SUP Based on poll timer
-          pollItem={pollItem}
-          onComplete={onFormComplete}
-        />
-      );
+      return <PollResponseMCQForm {...props} />;
     default:
-      console.error('Unknown poll type:', pollItem.type);
+      console.error('Unknown poll type:', props.pollItem.type);
       return <Text>Unknown poll type</Text>;
   }
 }
 
-function PollResponseQuestionForm({
-  pollItem,
-  isFormFreezed,
-  onComplete,
-}: PollResponseFormProps) {
+function PollResponseQuestionForm() {
   const [answer, setAnswer] = useState('');
 
   return (
-    <View>
+    <View style={style.optionsForm}>
       <View>
         <TextInput
-          editable={!isFormFreezed}
+          // editable={!isFormFreezed}
           autoComplete="off"
           style={style.pFormTextarea}
           multiline={true}
@@ -121,96 +89,184 @@ function PollResponseQuestionForm({
           }
         />
       </View>
-      <View style={style.responseActions}>
-        <PrimaryButton
-          disabled={isFormFreezed}
-          containerStyle={style.btnContainer}
-          textStyle={style.btnText}
-          onPress={() => {
-            if (!answer || answer.trim() === '') {
-              return;
-            }
-            onComplete(answer);
-          }}
-          text="Submit"
-        />
-      </View>
     </View>
   );
 }
 
 function PollResponseMCQForm({
   pollItem,
-  isFormFreezed,
-  onComplete,
-}: PollResponseFormProps) {
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [selectedOptions, setSelectedOptions] = useState([]);
-
-  const handleCheckboxToggle = (value: string) => {
-    setSelectedOptions(prevSelectedOptions => {
-      if (prevSelectedOptions.includes(value)) {
-        return prevSelectedOptions.filter(option => option !== value);
-      } else {
-        return [...prevSelectedOptions, value];
-      }
-    });
-  };
-
-  const handleRadioSelect = (option: string) => {
-    setSelectedOption(option);
-  };
-
-  const handleSubmit = () => {
-    if (selectedOptions.length === 0 && !selectedOption) {
-      return;
-    }
-    if (pollItem.multiple_response) {
-      onComplete(selectedOptions);
-    } else {
-      onComplete([selectedOption]);
-    }
-  };
-
+  selectedOptions,
+  submitted,
+  handleCheckboxToggle,
+  selectedOption,
+  handleRadioSelect,
+  submitting,
+}: Partial<PollFormInput> & {
+  submitted: boolean;
+  submitting: boolean;
+}) {
+  const localUid = useLocalUid();
   return (
-    <View>
-      <View style={style.optionsSection}>
+    <View style={style.optionsForm}>
+      <PollOptionList>
         {pollItem.multiple_response
-          ? pollItem.options.map((option, index) => (
-              <View style={style.optionCard} key={index}>
-                <Checkbox
-                  key={index}
-                  checked={selectedOptions.includes(option.value)}
-                  label={option.text}
-                  labelStye={style.optionCardText}
-                  onChange={() => handleCheckboxToggle(option.value)}
-                />
-              </View>
-            ))
-          : pollItem.options.map((option, index) => (
-              <View style={style.optionCard} key={index}>
-                <BaseRadioButton
-                  option={{
-                    label: option.text,
-                    value: option.value,
-                  }}
-                  labelStyle={style.optionCardText}
-                  checked={selectedOption === option.value}
-                  onChange={handleRadioSelect}
-                />
-              </View>
-            ))}
-      </View>
-      <View style={style.responseActions}>
-        <PrimaryButton
-          disabled={isFormFreezed}
-          containerStyle={style.btnContainer}
-          textStyle={style.btnText}
-          onPress={handleSubmit}
-          text="Submit"
-        />
-      </View>
+          ? pollItem.options?.map((option, index) => {
+              const myVote = option.votes.some(item => item.uid === localUid);
+              const checked = selectedOptions.includes(option?.value) || myVote;
+              submitted = submitted || pollItem.status === PollStatus.FINISHED;
+              return (
+                <TouchableWithoutFeedback disabled={submitted} key={index}>
+                  <View pointerEvents={submitted ? 'none' : 'auto'}>
+                    <PlatformWrapper>
+                      {(isHovered: boolean) => (
+                        <PollOptionInputListItem
+                          index={index}
+                          hovered={submitted ? false : isHovered}
+                          checked={checked}>
+                          <>
+                            <PollItemFill
+                              submitting={submitting}
+                              submittedMyVote={submitted && myVote}
+                              percent={option.percent}
+                            />
+                            <Checkbox
+                              disabled={submitted}
+                              ignoreDisabledStyle={true}
+                              key={index}
+                              checked={checked}
+                              label={option.text}
+                              labelStye={style.optionText}
+                              containerStyle={style.checkboxContainer}
+                              checkBoxStyle={
+                                submitted && checked
+                                  ? style.checkboxSubmittedAndVoted
+                                  : submitted && !checked
+                                  ? style.checkboxSubmittedAndNotVoted
+                                  : checked
+                                  ? style.checkboxVoted
+                                  : style.checkBox
+                              }
+                              tickColor={
+                                submitted && checked
+                                  ? $config.PRIMARY_ACTION_BRAND_COLOR
+                                  : submitted && !checked
+                                  ? $config.FONT_COLOR
+                                  : checked
+                                  ? $config.BACKGROUND_COLOR
+                                  : $config.FONT_COLOR
+                              }
+                              onChange={() =>
+                                handleCheckboxToggle(option?.value)
+                              }
+                            />
+                          </>
+                        </PollOptionInputListItem>
+                      )}
+                    </PlatformWrapper>
+                  </View>
+                </TouchableWithoutFeedback>
+              );
+            })
+          : pollItem.options?.map((option, index) => {
+              const myVote = option.votes.some(item => item.uid === localUid);
+              const checked = selectedOption === option.value || myVote;
+              submitted = submitted || pollItem.status === PollStatus.FINISHED;
+              return (
+                <TouchableWithoutFeedback disabled={submitted} key={index}>
+                  <View pointerEvents={submitted ? 'none' : 'auto'}>
+                    <PlatformWrapper>
+                      {(isHovered: boolean) => (
+                        <PollOptionInputListItem
+                          index={index}
+                          checked={checked}
+                          hovered={submitted ? false : isHovered}>
+                          <>
+                            <PollItemFill
+                              submitting={checked}
+                              submittedMyVote={submitted && myVote}
+                              percent={option.percent}
+                            />
+                            <BaseRadioButton
+                              disabled={submitted}
+                              ignoreDisabledStyle={true}
+                              option={{
+                                label: option.text,
+                                value: option.value,
+                              }}
+                              labelStyle={style.optionText}
+                              checked={checked}
+                              onChange={handleRadioSelect}
+                              filledColor={
+                                submitted && checked
+                                  ? $config.FONT_COLOR
+                                  : submitted && !checked
+                                  ? null
+                                  : checked
+                                  ? $config.PRIMARY_ACTION_BRAND_COLOR
+                                  : null
+                              }
+                              tickColor={
+                                submitted && checked
+                                  ? $config.PRIMARY_ACTION_BRAND_COLOR
+                                  : submitted && !checked
+                                  ? null
+                                  : checked
+                                  ? $config.BACKGROUND_COLOR
+                                  : null
+                              }
+                              customStyle={{opacity: 1}}
+                            />
+                          </>
+                        </PollOptionInputListItem>
+                      )}
+                    </PlatformWrapper>
+                  </View>
+                </TouchableWithoutFeedback>
+              );
+            })}
+      </PollOptionList>
     </View>
+  );
+}
+
+function PollFormSubmitButton({
+  buttonText,
+  submitDisabled,
+  onSubmit,
+  buttonStatus,
+}: Partial<PollFormButton>) {
+  // Define the styles based on button states
+  const getButtonColor = () => {
+    switch (buttonStatus) {
+      case 'initial':
+        return {backgroundColor: $config.SEMANTIC_NEUTRAL};
+      case 'selected':
+        return {backgroundColor: $config.PRIMARY_ACTION_BRAND_COLOR};
+      case 'submitting':
+        return {
+          backgroundColor: $config.PRIMARY_ACTION_BRAND_COLOR,
+          opacity: 0.7,
+        };
+      case 'submitted':
+        return {backgroundColor: $config.SEMANTIC_SUCCESS};
+      default:
+        return {};
+    }
+  };
+  return (
+    <PrimaryButton
+      disabled={submitDisabled}
+      containerStyle={[style.btnContainer, getButtonColor()]}
+      textStyle={style.btnText}
+      onPress={() => {
+        if (buttonStatus === 'submitted') {
+          return;
+        } else {
+          onSubmit();
+        }
+      }}
+      text={buttonText}
+    />
   );
 }
 
@@ -218,51 +274,18 @@ export {
   PollResponseQuestionForm,
   PollResponseMCQForm,
   PollResponseFormComplete,
-  PollRenderResponseForm,
   PollRenderResponseFormBody,
+  PollFormSubmitButton,
 };
 
 export const style = StyleSheet.create({
-  titleCard: {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: 12,
-  },
-  title: {
+  optionsForm: {
     display: 'flex',
     flexDirection: 'column',
-    gap: 2,
+    gap: 20,
+    width: '100%',
   },
-  titleAvatar: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  titleAvatarContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: $config.VIDEO_AUDIO_TILE_AVATAR_COLOR,
-  },
-  titleAvatarContainerText: {
-    fontSize: ThemeConfig.FontSize.small,
-    lineHeight: 16,
-    fontWeight: '600',
-    color: $config.VIDEO_AUDIO_TILE_COLOR,
-  },
-  titleText: {
-    color: $config.FONT_COLOR,
-    fontSize: ThemeConfig.FontSize.normal,
-    fontWeight: '700',
-    lineHeight: 20,
-  },
-  titleSubtext: {
-    color: $config.FONT_COLOR,
-    fontSize: ThemeConfig.FontSize.tiny,
-    fontWeight: '400',
-    lineHeight: 16,
-  },
-  heading4: {
+  thankyouText: {
     color: $config.FONT_COLOR + ThemeConfig.EmphasisPlus.high,
     fontSize: ThemeConfig.FontSize.medium,
     fontFamily: ThemeConfig.FontFamily.sansPro,
@@ -294,55 +317,33 @@ export const style = StyleSheet.create({
     height: 36,
     borderRadius: 4,
   },
+  submittedBtn: {
+    backgroundColor: $config.SEMANTIC_SUCCESS,
+    cursor: 'default',
+  },
   btnText: {
-    color: $config.FONT_COLOR,
+    color: $config.PRIMARY_ACTION_TEXT_COLOR,
     fontSize: ThemeConfig.FontSize.small,
     fontFamily: ThemeConfig.FontFamily.sansPro,
     fontWeight: '600',
     textTransform: 'capitalize',
   },
-  optionsSection: {
-    backgroundColor: $config.INPUT_FIELD_BACKGROUND_COLOR,
-    borderRadius: 9,
-    marginBottom: 32,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 4,
-    paddingVertical: 8,
-  },
-  optionCard: {
+  optionListItem: {
     display: 'flex',
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    padding: 12,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: $config.CARD_LAYER_3_COLOR,
+    backgroundColor: $config.CARD_LAYER_3_COLOR,
   },
-  optionCardText: {
+  optionText: {
     color: $config.FONT_COLOR,
     fontSize: ThemeConfig.FontSize.normal,
     fontFamily: ThemeConfig.FontFamily.sansPro,
     fontWeight: '400',
     lineHeight: 24,
   },
-  //   pFormOptionText: {
-  //     color: $config.FONT_COLOR + ThemeConfig.EmphasisPlus.high,
-  //     fontSize: ThemeConfig.FontSize.small,
-  //     fontFamily: ThemeConfig.FontFamily.sansPro,
-  //     lineHeight: 16,
-  //     fontWeight: '400',
-  //   },
-  //   pFormOptionPrefix: {
-  //     color: $config.FONT_COLOR + ThemeConfig.EmphasisPlus.low,
-  //     paddingRight: 4,
-  //   },
-  //   pFormOptionLink: {
-  //     fontWeight: '400',
-  //     lineHeight: 24,
-  //   },
-  //   pFormOptions: {
-  //     paddingVertical: 8,
-  //     gap: 8,
-  //   },
   pFormInput: {
     flex: 1,
     color: $config.FONT_COLOR + ThemeConfig.EmphasisPlus.high,
@@ -365,41 +366,25 @@ export const style = StyleSheet.create({
   mediumHeight: {
     height: 272,
   },
-  //   pFormOptionCard: {
-  //     display: 'flex',
-  //     paddingHorizontal: 16,
-  //     flexDirection: 'row',
-  //     justifyContent: 'flex-start',
-  //     alignItems: 'center',
-  //     alignSelf: 'stretch',
-  //     gap: 8,
-  //     backgroundColor: $config.INPUT_FIELD_BACKGROUND_COLOR,
-  //     borderRadius: 9,
-  //   },
-  //   verticalPadding: {
-  //     paddingVertical: 12,
-  //   },
-  //   pFormCheckboxContainer: {
-  //     paddingHorizontal: 16,
-  //     paddingVertical: 8,
-  //   },
-  //   previewActions: {
-  //     flex: 1,
-  //     display: 'flex',
-  //     flexDirection: 'row',
-  //     alignItems: 'center',
-  //     justifyContent: 'flex-end',
-  //   },
-  //   btnContainer: {
-  //     minWidth: 150,
-  //     height: 36,
-  //     borderRadius: 4,
-  //   },
-  //   btnText: {
-  //     color: $config.FONT_COLOR,
-  //     fontSize: ThemeConfig.FontSize.small,
-  //     fontFamily: ThemeConfig.FontFamily.sansPro,
-  //     fontWeight: '600',
-  //     textTransform: 'capitalize',
-  //   },
+  checkboxContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    width: '100%',
+  },
+  checkBox: {
+    borderColor: $config.FONT_COLOR,
+  },
+  checkboxVoted: {
+    borderColor: $config.PRIMARY_ACTION_BRAND_COLOR,
+    backgroundColor: $config.PRIMARY_ACTION_BRAND_COLOR,
+  },
+  checkboxSubmittedAndVoted: {
+    borderColor: $config.FONT_COLOR,
+    backgroundColor: $config.FONT_COLOR,
+  },
+  checkboxSubmittedAndNotVoted: {
+    borderColor: $config.FONT_COLOR,
+  },
 });

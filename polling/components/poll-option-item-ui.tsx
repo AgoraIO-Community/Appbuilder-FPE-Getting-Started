@@ -1,104 +1,126 @@
 import React from 'react';
 import {Text, View, StyleSheet, DimensionValue} from 'react-native';
-import {PollItemOptionItem} from '../context/poll-context';
-import {ThemeConfig, useLocalUid} from 'customization-api';
-
-interface PollOptionListItem {
-  optionItem: PollItemOptionItem;
-  showYourVote?: boolean;
-}
+import {ThemeConfig, $config, hexadecimalTransparency} from 'customization-api';
 
 function PollOptionList({children}: {children: React.ReactNode}) {
   return <View style={style.optionsList}>{children}</View>;
 }
 
-function PollOptionListItemResult({
-  optionItem,
-  showYourVote,
-}: PollOptionListItem) {
-  const localUid = useLocalUid();
+interface Props {
+  submitting: boolean;
+  submittedMyVote: boolean;
+  percent: string;
+}
+function PollItemFill({submitting, submittedMyVote, percent}: Props) {
   return (
-    <View style={style.optionListItem}>
-      <View style={style.optionListItemHeader}>
-        <Text style={style.optionText}>{optionItem.text}</Text>
-        {showYourVote &&
-          optionItem.votes.some(item => item.uid === localUid) && (
-            <Text style={style.yourResponseText}>Your Response</Text>
-          )}
-        <Text style={[style.optionText, style.pushRight]}>
-          {optionItem.percent}% ({optionItem.votes.length})
-        </Text>
+    <>
+      <View
+        style={[
+          style.optionFillBackground,
+          {
+            // Determine the width and background color based on canViewWhoVoted and iVoted
+            width: `${percent}%` as DimensionValue, // Always set the width based on the percentage value
+            backgroundColor: submittedMyVote
+              ? $config.PRIMARY_ACTION_BRAND_COLOR // If the user voted, use the primary brand color
+              : !submitting
+              ? $config.PRIMARY_ACTION_BRAND_COLOR +
+                hexadecimalTransparency['10%'] // If not, use the brand color with reduced opacity
+              : '',
+          },
+        ]}
+      />
+      <View style={[style.optionFillText]}>
+        <Text style={[style.optionText]}>{`${percent}%`}</Text>
       </View>
-      <View style={style.optionListItemFooter}>
-        <View style={style.progressBar}>
-          <View
-            key={optionItem.percent}
-            style={[
-              StyleSheet.absoluteFill,
-              style.progressBarFill,
-              {
-                width: `${optionItem.percent}%` as DimensionValue,
-              },
-            ]}
-          />
-        </View>
-      </View>
+    </>
+  );
+}
+
+interface PollOptionInputListItem {
+  index: number;
+  checked: boolean;
+  hovered: boolean;
+  children: React.ReactChild;
+}
+
+function PollOptionInputListItem({
+  index,
+  checked,
+  hovered,
+  children,
+}: PollOptionInputListItem) {
+  return (
+    <View
+      style={[
+        style.optionListItem,
+        style.optionListItemInput,
+        checked ? style.optionListItemChecked : {},
+        !checked && hovered ? style.optionListItemHovered : {},
+      ]}
+      key={index}>
+      {children}
     </View>
   );
 }
 
+const OPTION_LIST_ITEM_PADDING = 12;
+
 const style = StyleSheet.create({
   optionsList: {
-    backgroundColor: $config.INPUT_FIELD_BACKGROUND_COLOR,
-    borderRadius: 9,
-    paddingTop: 8,
-    paddingHorizontal: 12,
-    paddingBottom: 32,
     display: 'flex',
     flexDirection: 'column',
-    gap: 4,
+    gap: 8,
+    width: '100%',
   },
   optionListItem: {
     display: 'flex',
-    flexDirection: 'column',
-    gap: 4,
-  },
-  optionListItemHeader: {
-    display: 'flex',
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    padding: OPTION_LIST_ITEM_PADDING,
     alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: $config.CARD_LAYER_3_COLOR,
+    backgroundColor: $config.CARD_LAYER_1_COLOR,
+    overflow: 'hidden',
+    width: '100%',
+    position: 'relative',
   },
-  optionListItemFooter: {},
+  optionListItemInput: {
+    backgroundColor: $config.CARD_LAYER_3_COLOR,
+    padding: 0,
+  },
+  optionListItemChecked: {
+    borderColor: $config.PRIMARY_ACTION_BRAND_COLOR,
+  },
+  optionListItemHovered: {
+    borderColor: $config.SEMANTIC_NEUTRAL + hexadecimalTransparency['25%'],
+  },
+  optionFillBackground: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+  },
+  optionFillText: {
+    position: 'absolute',
+    top: OPTION_LIST_ITEM_PADDING,
+    bottom: 0,
+    right: OPTION_LIST_ITEM_PADDING,
+  },
   optionText: {
     color: $config.FONT_COLOR,
     fontSize: ThemeConfig.FontSize.normal,
     fontFamily: ThemeConfig.FontFamily.sansPro,
-    fontWeight: '400',
+    fontWeight: '700',
     lineHeight: 24,
   },
-  yourResponseText: {
-    color: $config.SEMANTIC_SUCCESS,
-    fontSize: ThemeConfig.FontSize.tiny,
-    fontFamily: ThemeConfig.FontFamily.sansPro,
-    fontWeight: '600',
-    lineHeight: 12,
-    paddingLeft: 16,
+  myVote: {
+    color: $config.PRIMARY_ACTION_BRAND_COLOR,
   },
   pushRight: {
     marginLeft: 'auto',
   },
-  progressBar: {
-    height: 4,
-    borderRadius: 8,
-    backgroundColor: $config.CARD_LAYER_3_COLOR,
-    width: '100%',
-  },
-  progressBarFill: {
-    borderRadius: 8,
-    backgroundColor: $config.PRIMARY_ACTION_BRAND_COLOR,
-  },
 });
 
-export {PollOptionList, PollOptionListItemResult};
+export {PollOptionList, PollOptionInputListItem, PollItemFill};

@@ -1,19 +1,21 @@
-import {Poll, PollAccess, PollItemOptionItem} from './context/poll-context';
+import {isMobileUA, isWeb} from 'customization-api';
+import {Poll, PollItemOptionItem, PollKind} from './context/poll-context';
+import pollIcons from './poll-icons';
 
 function log(...args: any[]) {
-  console.log('[CustomPolling::] ', ...args);
+  console.log('[Custom-Polling::] supriya ', ...args);
 }
 
 function addVote(
   responses: string[],
   options: PollItemOptionItem[],
-  uid: number,
+  user: {name: string; uid: number},
   timestamp: number,
 ): PollItemOptionItem[] {
   return options.map((option: PollItemOptionItem) => {
     // Count how many times the value appears in the strings array
     const exists = responses.includes(option.value);
-    const isVoted = option.votes.find(item => item.uid === uid);
+    const isVoted = option.votes.find(item => item.uid === user.uid);
     if (exists && !isVoted) {
       // Creating a new object explicitly
       const newOption: PollItemOptionItem = {
@@ -22,8 +24,7 @@ function addVote(
         votes: [
           ...option.votes,
           {
-            uid,
-            access: PollAccess.PUBLIC,
+            ...user,
             timestamp,
           },
         ],
@@ -61,14 +62,20 @@ function calculatePercentage(
   }) as PollItemOptionItem[];
 }
 
-function arrayToCsv(data: PollItemOptionItem[]): string {
-  const headers = ['text', 'value', 'votes', 'percent']; // Define the headers
+function arrayToCsv(question: string, data: PollItemOptionItem[]): string {
+  const headers = ['Option', 'Votes', 'Percent']; // Define the headers
   const rows = data.map(item => {
-    const voteIds = item.votes.map(vote => vote.uid).join(', '); // Combine vote uids into a single string
-    return `${item.text},${voteIds}`;
-  });
+    const count = item.votes.length;
+    // Handle missing or undefined value
+    const voteText = item.text ? `"${item.text}"` : '""';
+    const votesCount = count !== undefined ? count : '0';
+    const votePercent = item.percent !== undefined ? `${item.percent}%` : '0%';
 
-  return [headers.join(','), ...rows].join('\n');
+    return `${voteText},${votesCount},${votePercent}`;
+  });
+  // Include poll question at the top
+  const pollQuestion = `Poll Question: "${question}"`;
+  return [pollQuestion, '', headers.join(','), ...rows].join('\n');
 }
 
 function downloadCsv(data: string, filename: string = 'data.csv'): void {
@@ -86,8 +93,8 @@ function downloadCsv(data: string, filename: string = 'data.csv'): void {
   document.body.removeChild(link);
 }
 
-function capitalizeFirstLetter(string: string): string {
-  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+function capitalizeFirstLetter(sentence: string): string {
+  return sentence.charAt(0).toUpperCase() + sentence.slice(1).toLowerCase();
 }
 
 function hasUserVoted(options: PollItemOptionItem[], uid: number): boolean {
@@ -95,24 +102,102 @@ function hasUserVoted(options: PollItemOptionItem[], uid: number): boolean {
   return options.some(option => option.votes.some(vote => vote.uid === uid));
 }
 
-function mergePolls(newPoll: Poll, oldPoll: Poll) {
+type MergePollsResult = {
+  mergedPolls: Poll;
+  deletedPollIds: string[];
+};
+
+function mergePolls(newPoll: Poll, oldPoll: Poll): MergePollsResult {
   // Merge and discard absent properties
 
   // 1. Start with a copy of the current polls state
   const mergedPolls: Poll = {...oldPoll};
-  // 2. Add or update polls from newPolls
+
+  // 2. Array to track deleted poll IDs
+  const deletedPollIds: string[] = [];
+
+  // 3. Add or update polls from newPolls
   Object.keys(newPoll).forEach(pollId => {
     mergedPolls[pollId] = newPoll[pollId]; // Add or update each poll from newPolls
   });
-  // 3. Remove polls that are not in newPolls
-  Object.keys(mergedPolls).forEach(pollId => {
+
+  // 4. Remove polls that are not in newPolls and track deleted poll IDs
+  Object.keys(oldPoll).forEach(pollId => {
     if (!(pollId in newPoll)) {
       delete mergedPolls[pollId]; // Delete polls that are no longer present in newPolls
+      deletedPollIds.push(pollId); // Track deleted poll ID
     }
   });
 
-  return mergedPolls;
+  // 5. Return the merged polls and deleted poll IDs
+  return {mergedPolls, deletedPollIds};
 }
+
+function getPollTypeIcon(type: PollKind): string {
+  if (type === PollKind.OPEN_ENDED) {
+    return pollIcons.question;
+  }
+  if (type === PollKind.YES_NO) {
+    return pollIcons['like-dislike'];
+  }
+  if (type === PollKind.MCQ) {
+    return pollIcons.mcq;
+  }
+  return pollIcons.question;
+}
+
+function getPollTypeDesc(type: PollKind, multiple_response?: boolean): string {
+  if (type === PollKind.OPEN_ENDED) {
+    return 'Open Ended';
+  }
+  if (type === PollKind.YES_NO) {
+    return 'Select Any One';
+  }
+  if (type === PollKind.MCQ) {
+    if (multiple_response) {
+      return 'MCQ - Select One or More';
+    }
+    return 'MCQ - Select Any One';
+  }
+  return 'None';
+}
+
+function formatTimestampToTime(timestamp: number): string {
+  // Create a new Date object using the timestamp
+  const date = new Date(timestamp);
+  // Get hours and minutes from the Date object
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  // Determine if it's AM or PM
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  // Convert hours to 12-hour format
+  hours = hours % 12;
+  hours = hours ? hours : 12; // The hour '0' should be '12'
+  // Format minutes to always have two digits
+  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+  // Construct the formatted time string
+  return `${hours}:${formattedMinutes} ${ampm}`;
+}
+
+function calculateTotalVotes(options: Array<PollItemOptionItem>): number {
+  // Use reduce to sum up the length of the votes array for each option
+  return options.reduce((total, option) => total + option.votes.length, 0);
+}
+
+const debounce = <T extends (...args: any[]) => void>(
+  func: T,
+  delay: number = 300,
+) => {
+  let debounceTimer: ReturnType<typeof setTimeout>;
+  return function (this: ThisParameterType<T>, ...args: Parameters<T>) {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      func.apply(this, args);
+    }, delay);
+  };
+};
+
+const isWebOnly = () => isWeb() && !isMobileUA();
 
 export {
   log,
@@ -123,4 +208,10 @@ export {
   addVote,
   calculatePercentage,
   capitalizeFirstLetter,
+  getPollTypeDesc,
+  formatTimestampToTime,
+  calculateTotalVotes,
+  debounce,
+  getPollTypeIcon,
+  isWebOnly,
 };

@@ -4,7 +4,7 @@ import {
   useSidePanel,
 } from "customization-api";
 import React from "react";
-import { CustomMoreItem, POLL_SIDEBAR_NAME } from "./polling-ui";
+import { PollButtonWithSidePanel, POLL_SIDEBAR_NAME } from "./polling-ui";
 
 const Bottombar = () => {
   const { setSidePanel } = useSidePanel();
@@ -72,7 +72,7 @@ const Bottombar = () => {
                 hide: (w) => {
                   return w > 767 ? true : false;
                 },
-                component: CustomMoreItem,
+                component: PollButtonWithSidePanel,
                 onPress: () => {
                   setSidePanel(POLL_SIDEBAR_NAME);
                 },

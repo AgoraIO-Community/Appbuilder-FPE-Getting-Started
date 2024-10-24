@@ -6,19 +6,54 @@ import {
   ImageIcon,
   ThemeConfig,
   $config,
+  useActionSheet,
+  IconButton,
+  IconButtonProps,
 } from "customization-api";
 import { View, Text, StyleSheet } from "react-native";
+import pollIcons from "./polling/poll-icons";
 
 const POLL_SIDEBAR_NAME = "side-panel-poll";
 
-const CustomMoreItem = () => {
+const PollButtonWithSidePanel = () => {
+  const { isOnActionSheet } = useActionSheet();
+  const { setSidePanel } = useSidePanel();
+
+  // On smaller screens
+  if (isOnActionSheet) {
+    const iconButtonProps: IconButtonProps = {
+      onPress: () => {
+        setSidePanel(POLL_SIDEBAR_NAME);
+      },
+      iconProps: {
+        icon: pollIcons["bar-chart"],
+        tintColor: $config.SECONDARY_ACTION_COLOR,
+      },
+      btnTextProps: {
+        text: "Polls",
+        textColor: $config.FONT_COLOR,
+        numberOfLines: 1,
+        textStyle: {
+          marginTop: 8,
+        },
+      },
+      isOnActionSheet: isOnActionSheet,
+    };
+
+    return (
+      <ToolbarItem>
+        <IconButton {...iconButtonProps} />
+      </ToolbarItem>
+    );
+  }
+  // On bigger screens
   return (
     <ToolbarItem style={style.toolbarItem}>
       <View style={style.toolbarImg}>
         <ImageIcon
           iconType="plain"
-          iconSize={20}
-          name="pen"
+          iconSize={15}
+          icon={pollIcons["bar-chart"]}
           tintColor={$config.SECONDARY_ACTION_COLOR}
         />
       </View>
@@ -27,29 +62,7 @@ const CustomMoreItem = () => {
   );
 };
 
-// const CustomBottomToolbar = () => {
-//   const {setSidePanel} = useSidePanel();
-
-//   return (
-//     <ToolbarPreset
-//       align="bottom"
-//       items={{
-//         more: {
-//           fields: {
-//             test: {
-//               component: CustomMoreItem,
-//               onPress: () => {
-//                 setSidePanel(POLL_SIDEBAR_NAME);
-//               },
-//             },
-//           },
-//         },
-//       }}
-//     />
-//   );
-// };
-
-export { CustomMoreItem, POLL_SIDEBAR_NAME };
+export { PollButtonWithSidePanel, POLL_SIDEBAR_NAME };
 
 const style = StyleSheet.create({
   toolbarItem: {
