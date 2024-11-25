@@ -9,7 +9,7 @@ import {
 import {AppRootContext} from '../wrapper/AppRootWrapper';
 
 const AttendeeLayout = ({renderData}) => {
-  const {defaultContent} = useContent();
+  const {defaultContent, spotlightUid} = useContent();
 
   //to get recent host who joined on the call
   const {hostUid} = useContext(AppRootContext);
@@ -33,7 +33,7 @@ const AttendeeLayout = ({renderData}) => {
   }
   return (
     <View style={style.videoContainer}>
-      <VideoRenderer user={defaultContent[hostUid]} />
+      <VideoRenderer user={defaultContent[spotlightUid || hostUid]} />
     </View>
   );
 };
