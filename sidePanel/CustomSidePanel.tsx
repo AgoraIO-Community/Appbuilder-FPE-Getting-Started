@@ -6,7 +6,7 @@ import {
   View,
 } from "react-native";
 import React, { useContext } from "react";
-import { CustomWrapperContext } from "../custom-context/CustomWrapper";
+import { CustomWrapperContext } from "../wrapper/VideoCallWrapper";
 import { customEvents, UidType, useContent } from "customization-api";
 
 const CustomSidePanel = () => {
